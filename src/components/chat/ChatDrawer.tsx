@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ChevronLeft, ChevronRight, MessageSquare, Loader2, Sparkles } from 'lucide-react';
-import { AgentResponse, GeoCoordinate } from '@/lib/types/domain';
+import { Send, ChevronLeft, ChevronRight, MessageSquare, Loader2, Sparkles, Activity } from 'lucide-react';
+import { AgentResponse, GeoCoordinate, SessionContext } from '@/lib/types/domain';
+import { AgentSwarmTrace } from '@/lib/types/agents';
 import { ChatMessage } from './ChatMessage';
 import { QuickPrompts } from './QuickPrompts';
 
@@ -17,19 +18,21 @@ interface Message {
 interface ChatDrawerProps {
   onAgentResponse?: (res: AgentResponse) => void;
   selectedCoordinate?: GeoCoordinate | null;
+  onInspectSwarm?: (trace: AgentSwarmTrace) => void;
   className?: string;
 }
 
-export function ChatDrawer({ onAgentResponse, selectedCoordinate, className }: ChatDrawerProps) {
+export function ChatDrawer({ onAgentResponse, selectedCoordinate, onInspectSwarm, className }: ChatDrawerProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionContext, setSessionContext] = useState<SessionContext>({});
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Welcome to **Aurexo** // Autonomous Marine Intelligence Platform.\n\nI can assist you with:\n• Verified real-time wave, wind, and sea conditions\n• Satellite observation layers (SST, Chlorophyll, TrueColor)\n• Potential Fishing Zones (PFZ) and thermal gradients\n• Border proximity (IMBL) & Marine Protected Area compliance\n\nClick anywhere on the ocean map or select a quick inquiry below.',
+        'Welcome to **Aurexo** // Autonomous Marine Intelligence Platform.\n\nI can assist you with:\n• Verified real-time wave, wind, and sea conditions\n• Satellite observation layers (SST, Chlorophyll, TrueColor)\n• Potential Fishing Zones (PFZ) & Habitat Suitability\n• Border proximity (IMBL) & Marine Protected Area compliance\n• Real-time Indian vessel & fleet tracking\n• Sector-level regional marine warnings\n\nClick anywhere on the map or ask a tactical inquiry below.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -55,12 +58,19 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, className }: C
     setIsLoading(true);
 
     try {
+      // Build conversation history (excluding the welcome message)
+      const history = messages
+        .filter((m) => m.id !== 'welcome')
+        .map((m) => ({ role: m.role, content: m.content }));
+
       const res = await fetch('/api/agent/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: userMsg.content,
           coordinate: selectedCoordinate ?? undefined,
+          conversationHistory: history,
+          sessionContext: sessionContext,
         }),
       });
 
@@ -69,6 +79,14 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, className }: C
       }
 
       const agentData: AgentResponse = await res.json();
+
+      // Update multi-turn session context (location memory, coordinates, last active layer)
+      if (agentData.sessionContext) {
+        setSessionContext((prev) => ({
+          ...prev,
+          ...agentData.sessionContext,
+        }));
+      }
 
       const assistantMsg: Message = {
         id: `assistant-${Date.now()}`,
@@ -111,7 +129,7 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, className }: C
           <div className="flex items-center justify-between border-b border-slate-200/70 px-4 py-3 bg-white/50">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-marine-600" />
-              <span className="text-xs font-bold text-slate-800">Aurexo Tactical Copilot</span>
+              <span className="text-xs font-bold text-slate-800">Aurexo Multi-Agent Copilot</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -125,12 +143,17 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, className }: C
           {/* Conversation List */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3">
             {messages.map((m) => (
-              <ChatMessage key={m.id} message={m} />
+              <ChatMessage
+                key={m.id}
+                message={m}
+                onSelectPrompt={(p) => handleSubmit(p)}
+                onInspectSwarm={onInspectSwarm}
+              />
             ))}
             {isLoading && (
               <div className="flex items-center gap-2 rounded-2xl glass-pearl p-3 text-xs text-marine-700 animate-pulse">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-marine-600" />
-                <span>Orchestrating marine tools & spatial reasoning...</span>
+                <span>Orchestrating multi-agent swarm & marine reasoning...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -154,7 +177,7 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, className }: C
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about sea conditions, SST, IMBL, PFZ..."
+                placeholder="Ask about sea conditions, vessels, regions, SST..."
                 disabled={isLoading}
                 className="flex-1 rounded-xl bg-white px-3 py-2 text-xs text-slate-800 placeholder-slate-400 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-marine-500/20 focus:border-marine-500 shadow-pearl-sm"
               />

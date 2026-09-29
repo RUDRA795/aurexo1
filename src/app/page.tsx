@@ -4,7 +4,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { MarineHUD } from '@/components/telemetry/MarineHUD';
 import { ChatDrawer } from '@/components/chat/ChatDrawer';
-import { GeoCoordinate, MarineObservation, AgentResponse, SatelliteLayerId, GeofenceCheckResult } from '@/lib/types/domain';
+import { AgentInspector } from '@/components/chat/AgentInspector';
+import {
+  GeoCoordinate,
+  MarineObservation,
+  AgentResponse,
+  SatelliteLayerId,
+  GeofenceCheckResult,
+  MapMarkerAction,
+} from '@/lib/types/domain';
+import { AgentSwarmTrace } from '@/lib/types/agents';
 
 // Dynamically load MapLibre GL to avoid WebGL / window SSR evaluation
 const MarineMap = dynamic(
@@ -17,6 +26,12 @@ const MarineMap = dynamic(
       </div>
     ),
   }
+);
+
+// Dynamically load startup cinematic overlay without SSR evaluation
+const AurexoIntro = dynamic(
+  () => import('@/components/intro/AurexoIntro').then((mod) => mod.AurexoIntro),
+  { ssr: false }
 );
 
 export default function AurexoApp() {
@@ -34,7 +49,12 @@ export default function AurexoApp() {
   const [mapZoom, setMapZoom] = useState<number>(6.5);
   const [activeLayerOverride, setActiveLayerOverride] = useState<SatelliteLayerId>('none');
   const [highlightGeometry, setHighlightGeometry] = useState<GeoJSON.Geometry | null>(null);
+  const [markerAction, setMarkerAction] = useState<MapMarkerAction | null>(null);
   const [activeProvider, setActiveProvider] = useState<string>('gemini-3.8-flash');
+
+  // Multi-Agent Swarm Telemetry Inspector
+  const [swarmTrace, setSwarmTrace] = useState<AgentSwarmTrace | null>(null);
+  const [isInspectorOpen, setIsInspectorOpen] = useState<boolean>(false);
 
   // Fetch verified marine conditions whenever the selected coordinate changes
   const loadConditions = useCallback(async (coord: GeoCoordinate) => {
@@ -89,19 +109,39 @@ export default function AurexoApp() {
       setHighlightGeometry(null);
     }
 
-    // 4. Update HUD geofence status
+    // 4. Update dynamic marker action (pin or vessel highlight)
+    if (res.mapActions?.marker) {
+      setMarkerAction(res.mapActions.marker);
+    } else {
+      setMarkerAction(null);
+    }
+
+    // 5. Update HUD geofence status
     if (res.evidence?.geofence) {
       setGeofence(res.evidence.geofence);
     }
 
-    // 5. Update provider telemetry badge
+    // 6. Update multi-agent swarm trace
+    if (res.swarmTrace) {
+      setSwarmTrace(res.swarmTrace);
+    }
+
+    // 7. Update provider telemetry badge
     if (res.llmMetadata?.model) {
       setActiveProvider(`${res.llmMetadata.provider.toUpperCase()} (${res.llmMetadata.model})`);
     }
   }, []);
 
+  const handleInspectSwarm = useCallback((trace: AgentSwarmTrace) => {
+    setSwarmTrace(trace);
+    setIsInspectorOpen(true);
+  }, []);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-slate-950 font-sans">
+      {/* 0. Startup Cinematic Overlay */}
+      <AurexoIntro />
+
       {/* 1. Fullscreen Map Surface */}
       <MarineMap
         selectedCoordinate={selectedCoordinate}
@@ -110,6 +150,7 @@ export default function AurexoApp() {
         mapZoom={mapZoom}
         activeLayerOverride={activeLayerOverride}
         highlightGeometry={highlightGeometry}
+        markerAction={markerAction}
         className="absolute inset-0 z-0"
       />
 
@@ -121,6 +162,9 @@ export default function AurexoApp() {
             geofence={geofence}
             isLoadingConditions={isLoadingConditions}
             activeProvider={activeProvider}
+            onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
+            isInspectorOpen={isInspectorOpen}
+            swarmStepsCount={swarmTrace?.steps.length}
           />
         </div>
       </div>
@@ -130,8 +174,16 @@ export default function AurexoApp() {
         <ChatDrawer
           selectedCoordinate={selectedCoordinate}
           onAgentResponse={handleAgentResponse}
+          onInspectSwarm={handleInspectSwarm}
         />
       </div>
+
+      {/* 4. Right Floating Multi-Agent Swarm Telemetry Inspector */}
+      <AgentInspector
+        isOpen={isInspectorOpen}
+        onClose={() => setIsInspectorOpen(false)}
+        trace={swarmTrace}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Compass, Waves, Wind, Thermometer, Radio, Cpu } from 'lucide-react';
+import { Compass, Waves, Wind, Thermometer, Radio, Cpu, Activity } from 'lucide-react';
 import { MarineObservation, GeofenceCheckResult } from '@/lib/types/domain';
 import { RiskIndicator } from './RiskIndicator';
 
@@ -10,6 +10,9 @@ interface MarineHUDProps {
   geofence?: GeofenceCheckResult | null;
   isLoadingConditions?: boolean;
   activeProvider?: string;
+  onToggleInspector?: () => void;
+  isInspectorOpen?: boolean;
+  swarmStepsCount?: number;
 }
 
 export function MarineHUD({
@@ -17,6 +20,9 @@ export function MarineHUD({
   geofence,
   isLoadingConditions,
   activeProvider = 'gemini-3.8-flash',
+  onToggleInspector,
+  isInspectorOpen,
+  swarmStepsCount,
 }: MarineHUDProps) {
   const wave = currentObservation?.wave;
   const wind = currentObservation?.wind;
@@ -92,9 +98,30 @@ export function MarineHUD({
         )}
       </div>
 
-      {/* Status & Active LLM Info */}
+      {/* Status, Inspector Toggle & Active LLM Info */}
       <div className="flex items-center gap-2">
         <RiskIndicator geofence={geofence} waveHeight={wave?.heightMeters} />
+
+        {onToggleInspector && (
+          <button
+            onClick={onToggleInspector}
+            className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-[11px] font-semibold transition-all ${
+              isInspectorOpen
+                ? 'bg-marine-700 text-white shadow-sm'
+                : 'bg-slate-100/90 text-slate-700 hover:bg-slate-200'
+            }`}
+            title="Inspect Collaborative Agent Swarm Reasoning"
+          >
+            <Activity className="h-3.5 w-3.5 text-marine-500" />
+            <span>Swarm</span>
+            {swarmStepsCount !== undefined && swarmStepsCount > 0 && (
+              <span className="rounded-full bg-marine-500 text-white px-1 text-[9px] font-mono">
+                {swarmStepsCount}
+              </span>
+            )}
+          </button>
+        )}
+
         <div
           className="hidden sm:flex items-center gap-1 rounded-xl bg-slate-100/90 px-2.5 py-1 text-[11px] font-medium text-slate-600"
           title="Active LLM Reasoning Engine"

@@ -99,6 +99,19 @@ export interface AgentEvidenceSource {
   endpoint?: string;
 }
 
+export interface MapMarkerAction {
+  coordinates: GeoCoordinate;
+  title: string;
+  description: string;
+  variant: 'vessel' | 'hazard' | 'point' | 'region';
+}
+
+export interface SessionContext {
+  lastLocationName?: string;
+  lastCoordinates?: GeoCoordinate;
+  lastActiveLayer?: SatelliteLayerId;
+}
+
 export interface AgentResponse {
   answer: string;
   intent: string;
@@ -114,7 +127,21 @@ export interface AgentResponse {
     zoom?: number;
     activeLayer?: SatelliteLayerId;
     highlightGeometry?: GeoJSON.Geometry;
+    marker?: MapMarkerAction;
   };
+  suggestedQueries?: string[];
+  swarmTrace?: {
+    steps: Array<{
+      agentName: 'Supervisor' | 'Ocean' | 'WeatherHazard' | 'SpatialSentinel' | 'Vessel' | 'BlueEconomy';
+      action: string;
+      status: 'executing' | 'completed' | 'flagged';
+      detail: string;
+      timestamp: string;
+    }>;
+    consensusSummary: string;
+    durationMs: number;
+  };
+  sessionContext?: SessionContext;
   llmMetadata: {
     provider: 'gemini' | 'ollama' | 'rule_fallback';
     model: string;

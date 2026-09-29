@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bot, User, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, Cpu, Database } from 'lucide-react';
-import { AgentResponse, AgentEvidenceSource, IntegrationStatus } from '@/lib/types/domain';
+import { Bot, User, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, Cpu, Database, Sparkles, Activity } from 'lucide-react';
+import { AgentResponse, IntegrationStatus } from '@/lib/types/domain';
+import { AgentSwarmTrace } from '@/lib/types/agents';
 
 interface ChatMessageProps {
   message: {
@@ -12,6 +13,8 @@ interface ChatMessageProps {
     agentData?: AgentResponse;
     timestamp: string;
   };
+  onSelectPrompt?: (prompt: string) => void;
+  onInspectSwarm?: (trace: AgentSwarmTrace) => void;
 }
 
 function StatusBadge({ status }: { status: IntegrationStatus }) {
@@ -38,7 +41,7 @@ function StatusBadge({ status }: { status: IntegrationStatus }) {
   );
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, onSelectPrompt, onInspectSwarm }: ChatMessageProps) {
   const isUser = message.role === 'user';
   const [showEvidence, setShowEvidence] = useState(false);
   const agent = message.agentData;
@@ -69,21 +72,32 @@ export function ChatMessage({ message }: ChatMessageProps) {
             {message.content}
           </div>
 
-          {/* Evidence Drawer Toggle for Agent Responses */}
+          {/* Action Row for Agent Responses */}
           {agent && (
-            <div className="pt-2 border-t border-slate-200/60 mt-2">
+            <div className="pt-2 border-t border-slate-200/60 mt-2 flex flex-wrap items-center justify-between gap-1.5">
               <button
                 onClick={() => setShowEvidence((prev) => !prev)}
                 className="flex items-center gap-1 text-[11px] font-semibold text-marine-700 hover:text-marine-800 transition-colors"
               >
                 <Database className="h-3 w-3" />
-                <span>Evidence & Data Provenance ({agent.evidence.sources.length} sources)</span>
+                <span>Evidence ({agent.evidence.sources.length} sources)</span>
                 {showEvidence ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
               </button>
 
+              {agent.swarmTrace && onInspectSwarm && (
+                <button
+                  onClick={() => onInspectSwarm(agent.swarmTrace!)}
+                  className="inline-flex items-center gap-1 rounded-lg bg-marine-50 hover:bg-marine-100 px-2 py-0.5 text-[10px] font-semibold text-marine-700 border border-marine-200 transition-all hover:scale-102"
+                  title="Inspect Multi-Agent Swarm Execution Steps"
+                >
+                  <Activity className="h-2.5 w-2.5 text-marine-600" />
+                  <span>Swarm Trace ({agent.swarmTrace.steps.length} steps)</span>
+                </button>
+              )}
+
               {/* Collapsible Evidence Payload */}
               {showEvidence && (
-                <div className="mt-2 space-y-2 rounded-xl bg-slate-50/90 p-2.5 border border-slate-200 text-[11px] text-slate-600">
+                <div className="w-full mt-2 space-y-2 rounded-xl bg-slate-50/90 p-2.5 border border-slate-200 text-[11px] text-slate-600">
                   <div className="font-semibold text-slate-700 flex items-center justify-between">
                     <span>Authoritative Data Sources</span>
                     <span className="text-[10px] font-mono text-slate-400">
@@ -124,6 +138,23 @@ export function ChatMessage({ message }: ChatMessageProps) {
           )}
         </div>
       </div>
+
+      {/* Suggested Follow-up Queries */}
+      {agent?.suggestedQueries && agent.suggestedQueries.length > 0 && onSelectPrompt && (
+        <div className="flex flex-wrap gap-1.5 max-w-[92%] pl-2 pt-0.5">
+          {agent.suggestedQueries.map((query, qIdx) => (
+            <button
+              key={qIdx}
+              onClick={() => onSelectPrompt(query)}
+              className="inline-flex items-center gap-1 rounded-full bg-white/90 hover:bg-marine-50 border border-slate-200/80 px-2.5 py-1 text-[10px] font-medium text-slate-700 hover:text-marine-700 shadow-2xs transition-all hover:scale-102 active:scale-98"
+            >
+              <Sparkles className="h-2.5 w-2.5 text-marine-600" />
+              <span>{query}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <span className="text-[9px] text-slate-400 px-1 font-mono">{message.timestamp}</span>
     </div>
   );

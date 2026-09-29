@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import maplibregl, { Map as MapLibreMap } from 'maplibre-gl';
-import { SatelliteLayerId, GeoCoordinate } from '@/lib/types/domain';
+import maplibregl, { Map as MapLibreMap, Popup } from 'maplibre-gl';
+import { SatelliteLayerId, GeoCoordinate, MapMarkerAction } from '@/lib/types/domain';
+import { MarineVessel } from '@/lib/types/vessel';
 import { SATELLITE_LAYERS, buildGibsWmsUrl } from '@/lib/tools/satellite-layers';
 import { LayerController } from './LayerController';
 import { Legend } from './Legend';
@@ -13,6 +14,7 @@ interface MarineMapProps {
   mapCenter?: [number, number]; // [lng, lat]
   mapZoom?: number;
   highlightGeometry?: GeoJSON.Geometry | null;
+  markerAction?: MapMarkerAction | null;
   className?: string;
   activeLayerOverride?: SatelliteLayerId;
 }
@@ -23,17 +25,21 @@ export function MarineMap({
   mapCenter,
   mapZoom,
   highlightGeometry,
+  markerAction,
   className,
   activeLayerOverride,
 }: MarineMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
+  const agentMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   const [activeLayer, setActiveLayer] = useState<SatelliteLayerId>('none');
   const [showBoundaries, setShowBoundaries] = useState<boolean>(true);
   const [showMPAs, setShowMPAs] = useState<boolean>(true);
   const [showPFZSectors, setShowPFZSectors] = useState<boolean>(true);
+  const [showVessels, setShowVessels] = useState<boolean>(true);
+  const [vessels, setVessels] = useState<MarineVessel[]>([]);
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
 
   // Sync external layer override if provided
@@ -42,6 +48,21 @@ export function MarineMap({
       setActiveLayer(activeLayerOverride);
     }
   }, [activeLayerOverride]);
+
+  // Load vessels from registry API
+  useEffect(() => {
+    fetch('/api/vessels')
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error('Failed to load fleet');
+      })
+      .then((data: MarineVessel[]) => {
+        if (Array.isArray(data)) {
+          setVessels(data);
+        }
+      })
+      .catch((err) => console.warn('Vessel registry sync notice:', err.message));
+  }, []);
 
   // Initialize MapLibre
   useEffect(() => {
@@ -219,10 +240,79 @@ export function MarineMap({
           'line-opacity': 0.9,
         },
       });
+
+      // 8. Vessel Fleet GeoJSON Source & Layers
+      map.addSource('vessel-fleet', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
+
+      map.addLayer({
+        id: 'vessel-points',
+        type: 'circle',
+        source: 'vessel-fleet',
+        paint: {
+          'circle-radius': 6.5,
+          'circle-color': [
+            'match',
+            ['get', 'type'],
+            'RESEARCH', '#06b6d4',
+            'COAST_GUARD', '#f59e0b',
+            'FISHING', '#10b981',
+            'CARGO', '#6366f1',
+            'TANKER', '#f43f5e',
+            '#3b82f6',
+          ],
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#ffffff',
+          'circle-opacity': 0.95,
+        },
+      });
+
+      // Vessel Click Popup
+      map.on('click', 'vessel-points', (e) => {
+        if (!e.features || !e.features[0]) return;
+        const feature = e.features[0];
+        const geom = feature.geometry as GeoJSON.Point;
+        const coords = geom.coordinates.slice() as [number, number];
+        const p = feature.properties || {};
+
+        new Popup({ offset: 12, closeButton: true, className: 'aurexo-vessel-popup' })
+          .setLngLat(coords)
+          .setHTML(`
+            <div style="font-family: inherit; font-size: 11px; color: #1e293b; padding: 4px; line-height: 1.4;">
+              <div style="font-weight: 700; font-size: 12px; color: #0284c7; margin-bottom: 2px;">
+                ⚓ ${p.name || 'Vessel'}
+              </div>
+              <div><b>Type:</b> ${p.type}</div>
+              <div><b>MMSI:</b> ${p.mmsi}</div>
+              <div><b>Speed:</b> ${p.speedKnots} kts | <b>Heading:</b> ${p.headingDegrees}°</div>
+              <div><b>Destination:</b> ${p.destination || 'N/A'}</div>
+              <div style="margin-top: 4px; font-size: 9px; color: #64748b; font-family: monospace;">
+                Source: ${p.sourceStatus}
+              </div>
+            </div>
+          `)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', 'vessel-points', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'vessel-points', () => {
+        map.getCanvas().style.cursor = '';
+      });
     });
 
-    // Handle Map Clicks
+    // Handle Map Clicks (only when not clicking a vessel)
     map.on('click', (e) => {
+      // Check if clicked feature was a vessel
+      const features = map.queryRenderedFeatures(e.point, { layers: ['vessel-points'] });
+      if (features.length > 0) return;
+
       const coord: GeoCoordinate = {
         latitude: parseFloat(e.lngLat.lat.toFixed(4)),
         longitude: parseFloat(e.lngLat.lng.toFixed(4)),
@@ -282,6 +372,40 @@ export function MarineMap({
     if (map.getLayer('pfz-points')) map.setLayoutProperty('pfz-points', 'visibility', visibility);
   }, [showPFZSectors, isMapLoaded]);
 
+  // Update Vessels GeoJSON data & visibility
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !isMapLoaded) return;
+
+    const source = map.getSource('vessel-fleet') as maplibregl.GeoJSONSource;
+    if (source && vessels.length > 0) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: vessels.map((v) => ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [v.coordinates.longitude, v.coordinates.latitude],
+          },
+          properties: {
+            id: v.id,
+            name: v.name,
+            type: v.vesselType,
+            mmsi: v.mmsi,
+            speedKnots: v.speedKnots,
+            headingDegrees: v.headingDegrees,
+            destination: v.destination ?? 'Sector Patrol',
+            sourceStatus: v.sourceStatus,
+          },
+        })),
+      });
+    }
+
+    if (map.getLayer('vessel-points')) {
+      map.setLayoutProperty('vessel-points', 'visibility', showVessels ? 'visible' : 'none');
+    }
+  }, [vessels, showVessels, isMapLoaded]);
+
   // Update selected coordinate marker
   useEffect(() => {
     const map = mapRef.current;
@@ -305,6 +429,43 @@ export function MarineMap({
       markerRef.current.setLngLat([selectedCoordinate.longitude, selectedCoordinate.latitude]);
     }
   }, [selectedCoordinate, isMapLoaded]);
+
+  // Update Agent Target Marker (MapMarkerAction)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !isMapLoaded) return;
+
+    if (!markerAction) {
+      if (agentMarkerRef.current) {
+        agentMarkerRef.current.remove();
+        agentMarkerRef.current = null;
+      }
+      return;
+    }
+
+    if (agentMarkerRef.current) {
+      agentMarkerRef.current.remove();
+      agentMarkerRef.current = null;
+    }
+
+    const el = document.createElement('div');
+    el.className = 'flex items-center justify-center w-7 h-7 rounded-full border-2 border-white bg-rose-500 text-white shadow-pearl-md cursor-pointer animate-bounce';
+    el.innerHTML = markerAction.variant === 'vessel' ? '🚢' : '📍';
+
+    const popup = new Popup({ offset: 16 }).setHTML(`
+      <div style="font-family: inherit; font-size: 11px; padding: 2px;">
+        <div style="font-weight: 700; color: #e11d48;">${markerAction.title}</div>
+        ${markerAction.description ? `<div style="color: #64748b; font-size: 10px;">${markerAction.description}</div>` : ''}
+      </div>
+    `);
+
+    agentMarkerRef.current = new maplibregl.Marker({ element: el })
+      .setLngLat([markerAction.coordinates.longitude, markerAction.coordinates.latitude])
+      .setPopup(popup)
+      .addTo(map);
+
+    popup.addTo(map);
+  }, [markerAction, isMapLoaded]);
 
   // Update map camera when mapCenter or mapZoom changes
   useEffect(() => {
@@ -367,6 +528,8 @@ export function MarineMap({
           onToggleMPAs={() => setShowMPAs((prev) => !prev)}
           showPFZSectors={showPFZSectors}
           onTogglePFZSectors={() => setShowPFZSectors((prev) => !prev)}
+          showVessels={showVessels}
+          onToggleVessels={() => setShowVessels((prev) => !prev)}
         />
       </div>
     </div>

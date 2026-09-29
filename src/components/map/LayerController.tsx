@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Layers, Globe, Thermometer, Waves, ShieldAlert, Fish } from 'lucide-react';
+import { Layers, Globe, Thermometer, Waves, ShieldAlert, Fish, Navigation } from 'lucide-react';
 import { SatelliteLayerId } from '@/lib/types/domain';
 import { SATELLITE_LAYERS } from '@/lib/tools/satellite-layers';
 
@@ -14,6 +14,8 @@ interface LayerControllerProps {
   onToggleMPAs: () => void;
   showPFZSectors: boolean;
   onTogglePFZSectors: () => void;
+  showVessels?: boolean;
+  onToggleVessels?: () => void;
 }
 
 export function LayerController({
@@ -25,6 +27,8 @@ export function LayerController({
   onToggleMPAs,
   showPFZSectors,
   onTogglePFZSectors,
+  showVessels = true,
+  onToggleVessels,
 }: LayerControllerProps) {
   return (
     <div className="glass-pearl flex flex-wrap items-center gap-1.5 rounded-2xl p-1.5 shadow-pearl-md">
@@ -125,8 +129,23 @@ export function LayerController({
         title="Toggle Coastal Potential Fishing Sectors"
       >
         <Fish className="h-3.5 w-3.5 text-sky-500" />
-        <span>PFZ Sectors</span>
+        <span>PFZ</span>
       </button>
+
+      {onToggleVessels && (
+        <button
+          onClick={onToggleVessels}
+          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-medium transition-all ${
+            showVessels
+              ? 'bg-marine-700 text-white shadow-sm'
+              : 'text-slate-700 hover:bg-slate-100/80'
+          }`}
+          title="Toggle Real-Time Vessel Fleet Layer"
+        >
+          <Navigation className="h-3.5 w-3.5 text-emerald-400 rotate-45" />
+          <span>Fleet</span>
+        </button>
+      )}
     </div>
   );
 }

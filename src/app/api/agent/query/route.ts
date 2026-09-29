@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processAgentQuery } from '@/lib/orchestrator/engine';
-import { GeoCoordinate } from '@/lib/types/domain';
+import { runSupervisorAgent } from '@/lib/agents/supervisor';
+import { GeoCoordinate, SessionContext } from '@/lib/types/domain';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const prompt = body.prompt;
     const coordinate: GeoCoordinate | undefined = body.coordinate;
+    const conversationHistory = body.conversationHistory ?? [];
+    const sessionContext: SessionContext = body.sessionContext ?? {};
 
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       return NextResponse.json(
@@ -15,7 +17,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await processAgentQuery(prompt.trim(), coordinate);
+    const result = await runSupervisorAgent({
+      prompt: prompt.trim(),
+      userCoordinates: coordinate,
+      conversationHistory,
+      sessionContext,
+    });
 
     return NextResponse.json(result);
   } catch (error) {
