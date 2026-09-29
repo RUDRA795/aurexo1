@@ -26,7 +26,7 @@ test('Supervisor orchestrates regional active warnings query across all 9 sector
   assert.ok(res.toolsUsed.includes('scan_active_regional_warnings'));
   assert.ok(res.swarmTrace);
   assert.ok(res.swarmTrace.steps.some((s) => s.agentName === 'WeatherHazard'));
-  assert.ok(res.suggestedQueries.length > 0);
+  assert.ok(res.suggestedQueries && res.suggestedQueries.length > 0);
 });
 
 test('Supervisor resolves multi-turn anaphora from sessionContext', async () => {
@@ -50,5 +50,5 @@ test('Supervisor resolves multi-turn anaphora from sessionContext', async () => 
     s.action.includes('Anaphora Resolved')
   );
   assert.ok(resolvedStep, 'Expected Anaphora Resolved step in supervisor trace');
-  assert.ok(turn2.mapActions.center);
+  assert.ok(turn2.mapActions && turn2.mapActions.center);
 });

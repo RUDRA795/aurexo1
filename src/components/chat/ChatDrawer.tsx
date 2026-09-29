@@ -33,11 +33,25 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, onInspectSwarm
       role: 'assistant',
       content:
         'Welcome to **Aurexo** // Autonomous Marine Intelligence Platform.\n\nI can assist you with:\n• Verified real-time wave, wind, and sea conditions\n• Satellite observation layers (SST, Chlorophyll, TrueColor)\n• Potential Fishing Zones (PFZ) & Habitat Suitability\n• Border proximity (IMBL) & Marine Protected Area compliance\n• Real-time Indian vessel & fleet tracking\n• Sector-level regional marine warnings\n\nClick anywhere on the map or ask a tactical inquiry below.',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: 'Tactical AI',
     },
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Set client-local time for welcome message on mount without SSR mismatch
+  useEffect(() => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === 'welcome' && m.timestamp === 'Tactical AI'
+          ? {
+              ...m,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            }
+          : m
+      )
+    );
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

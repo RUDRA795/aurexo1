@@ -155,7 +155,7 @@ export function ChatMessage({ message, onSelectPrompt, onInspectSwarm }: ChatMes
         </div>
       )}
 
-      <span className="text-[9px] text-slate-400 px-1 font-mono">{message.timestamp}</span>
+      <span suppressHydrationWarning className="text-[9px] text-slate-400 px-1 font-mono">{message.timestamp}</span>
     </div>
   );
 }

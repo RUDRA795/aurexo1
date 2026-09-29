@@ -45,8 +45,10 @@ test('findNearestVessel accurately calculates proximity using Turf spherical geo
 test('registerUserVessel persists custom vessel and allows lookup', () => {
   const newVessel = registerUserVessel({
     name: 'FV Sagar Ratna',
+    mmsi: '419999001',
     vesselType: 'Artisanal Fishing',
-    coordinates: { latitude: 15.30, longitude: 73.75 },
+    latitude: 15.30,
+    longitude: 73.75,
     speedKnots: 8.5,
     headingDegrees: 240,
     destination: 'Mormugao Port',

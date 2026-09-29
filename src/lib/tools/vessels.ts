@@ -179,9 +179,10 @@ export const RegisterVesselSchema = z.object({
   notes: z.string().optional(),
 });
 
-export type RegisterVesselInput = z.infer<typeof RegisterVesselSchema>;
+export type RegisterVesselInput = z.input<typeof RegisterVesselSchema>;
 
-export function registerUserVessel(input: RegisterVesselInput): MarineVessel {
+export function registerUserVessel(rawInput: RegisterVesselInput): MarineVessel {
+  const input = RegisterVesselSchema.parse(rawInput);
   const newVessel: MarineVessel = {
     id: `VESSEL-USER-${Date.now()}`,
     mmsi: input.mmsi,
