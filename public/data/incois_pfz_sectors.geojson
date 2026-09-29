@@ -1,0 +1,75 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "PFZ-SEC-GUJ",
+        "name": "Saurashtra Coast (Porbandar - Veraval)",
+        "state": "Gujarat",
+        "primaryPelagicSpecies": ["Ribbon Fish", "Tuna", "Mackerel"],
+        "advisoryFrequency": "Bi-weekly (Non-monsoon)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [69.20, 21.20]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "PFZ-SEC-MAH",
+        "name": "Konkan North (Mumbai - Alibaug Offshore)",
+        "state": "Maharashtra",
+        "primaryPelagicSpecies": ["Bombay Duck", "Pomfret", "Seer Fish"],
+        "advisoryFrequency": "Bi-weekly"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [72.40, 18.80]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "PFZ-SEC-KER",
+        "name": "Malabar Coast (Kochi - Alleppey Offshore)",
+        "state": "Kerala",
+        "primaryPelagicSpecies": ["Indian Oil Sardine", "Mackerel", "Tuna"],
+        "advisoryFrequency": "Bi-weekly"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [75.80, 9.80]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "PFZ-SEC-TN",
+        "name": "Coromandel Coast (Chennai - Nagapattinam)",
+        "state": "Tamil Nadu",
+        "primaryPelagicSpecies": ["Sardines", "Carangids", "Snappers"],
+        "advisoryFrequency": "Bi-weekly"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [80.50, 12.50]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "PFZ-SEC-AP",
+        "name": "Northern Andhra (Visakhapatnam - Kakinada)",
+        "state": "Andhra Pradesh",
+        "primaryPelagicSpecies": ["Tuna", "Mackerel", "Perches"],
+        "advisoryFrequency": "Bi-weekly"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [83.60, 17.50]
+      }
+    }
+  ]
+}

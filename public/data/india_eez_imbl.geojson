@@ -1,0 +1,88 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "India - Pakistan IMBL",
+        "type": "IMBL",
+        "neighbor": "Pakistan",
+        "description": "International Maritime Boundary Line (Sir Creek seaward extension)",
+        "alertThresholdKm": 35
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [68.16, 23.63],
+          [67.80, 23.50],
+          [67.30, 23.25],
+          [66.50, 22.80],
+          [65.70, 22.30],
+          [64.80, 21.60]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "India - Sri Lanka IMBL",
+        "type": "IMBL",
+        "neighbor": "Sri Lanka",
+        "description": "International Maritime Boundary Line in Palk Bay and Gulf of Mannar",
+        "alertThresholdKm": 25
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [79.85, 10.08],
+          [79.66, 9.68],
+          [79.53, 9.36],
+          [79.45, 9.15],
+          [79.40, 9.00],
+          [79.35, 8.85],
+          [79.30, 8.60],
+          [79.15, 8.35],
+          [79.00, 8.10],
+          [78.85, 7.85]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "India EEZ Sector - Arabian Sea",
+        "type": "EEZ",
+        "description": "Indian Exclusive Economic Zone Arabian Sea perimeter"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [68.16, 23.63],
+          [66.00, 20.00],
+          [68.50, 16.00],
+          [70.00, 12.00],
+          [74.00, 7.50],
+          [77.50, 6.50]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "India EEZ Sector - Bay of Bengal",
+        "type": "EEZ",
+        "description": "Indian Exclusive Economic Zone Bay of Bengal perimeter"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [78.85, 7.85],
+          [82.00, 10.00],
+          [85.00, 13.00],
+          [88.00, 17.00],
+          [89.50, 20.50]
+        ]
+      }
+    }
+  ]
+}

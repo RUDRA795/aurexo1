@@ -1,0 +1,108 @@
+'use client';
+
+import React from 'react';
+import { Compass, Waves, Wind, Thermometer, Radio, Cpu } from 'lucide-react';
+import { MarineObservation, GeofenceCheckResult } from '@/lib/types/domain';
+import { RiskIndicator } from './RiskIndicator';
+
+interface MarineHUDProps {
+  currentObservation?: MarineObservation | null;
+  geofence?: GeofenceCheckResult | null;
+  isLoadingConditions?: boolean;
+  activeProvider?: string;
+}
+
+export function MarineHUD({
+  currentObservation,
+  geofence,
+  isLoadingConditions,
+  activeProvider = 'gemini-3.8-flash',
+}: MarineHUDProps) {
+  const wave = currentObservation?.wave;
+  const wind = currentObservation?.wind;
+  const sst = currentObservation?.seaSurfaceTemperatureCelsius;
+  const coord = currentObservation?.coordinates;
+
+  return (
+    <header className="glass-pearl flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-2.5 shadow-pearl-md">
+      {/* Brand Identity */}
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-marine-600 text-white shadow-sm">
+          <Compass className="h-4 w-4 animate-spin-slow" />
+        </div>
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-extrabold tracking-tight text-slate-900">AUREXO</span>
+            <span className="rounded bg-marine-100 px-1.5 py-0.2 text-[10px] font-semibold text-marine-700">
+              SIH26176
+            </span>
+          </div>
+          <p className="text-[10px] font-medium text-slate-500">
+            {currentObservation?.locationName ?? 'Autonomous Marine Intelligence'}
+          </p>
+        </div>
+      </div>
+
+      {/* Live Marine Telemetry Badges */}
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Coordinates */}
+        {coord && (
+          <div className="flex items-center gap-1 rounded-xl bg-slate-100/90 px-2.5 py-1 text-xs font-mono text-slate-700">
+            <span className="text-slate-400">LAT:</span>
+            <span>{coord.latitude.toFixed(2)}°N</span>
+            <span className="text-slate-400 ml-1">LON:</span>
+            <span>{coord.longitude.toFixed(2)}°E</span>
+          </div>
+        )}
+
+        {/* Wave Height Badge */}
+        {wave && (
+          <div className="flex items-center gap-1.5 rounded-xl border border-sky-200/80 bg-sky-50/80 px-2.5 py-1 text-xs font-semibold text-sky-800">
+            <Waves className="h-3.5 w-3.5 text-sky-600" />
+            <span>{wave.heightMeters.toFixed(1)}m</span>
+            <span className="text-[10px] font-normal text-sky-600">({wave.category})</span>
+          </div>
+        )}
+
+        {/* Wind Speed Badge */}
+        {wind && (
+          <div className="flex items-center gap-1.5 rounded-xl border border-indigo-200/80 bg-indigo-50/80 px-2.5 py-1 text-xs font-semibold text-indigo-800">
+            <Wind className="h-3.5 w-3.5 text-indigo-600" />
+            <span>{wind.speedKmh.toFixed(0)} km/h</span>
+            <span className="text-[10px] font-normal text-indigo-600">
+              (Bft {wind.beaufortScale})
+            </span>
+          </div>
+        )}
+
+        {/* Sea Surface Temperature Badge */}
+        {sst !== undefined && (
+          <div className="flex items-center gap-1.5 rounded-xl border border-rose-200/80 bg-rose-50/80 px-2.5 py-1 text-xs font-semibold text-rose-800">
+            <Thermometer className="h-3.5 w-3.5 text-rose-600" />
+            <span>{sst.toFixed(1)}°C</span>
+          </div>
+        )}
+
+        {/* Loading Indicator */}
+        {isLoadingConditions && (
+          <div className="flex items-center gap-1 text-xs font-medium text-marine-600 animate-pulse">
+            <Radio className="h-3.5 w-3.5 animate-spin" />
+            <span>Updating...</span>
+          </div>
+        )}
+      </div>
+
+      {/* Status & Active LLM Info */}
+      <div className="flex items-center gap-2">
+        <RiskIndicator geofence={geofence} waveHeight={wave?.heightMeters} />
+        <div
+          className="hidden sm:flex items-center gap-1 rounded-xl bg-slate-100/90 px-2.5 py-1 text-[11px] font-medium text-slate-600"
+          title="Active LLM Reasoning Engine"
+        >
+          <Cpu className="h-3 w-3 text-marine-600" />
+          <span>{activeProvider}</span>
+        </div>
+      </div>
+    </header>
+  );
+}
