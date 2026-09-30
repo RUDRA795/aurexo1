@@ -1,6 +1,16 @@
 import { generateWithGemini } from './gemini';
-import { generateWithOllama } from './ollama';
+import { generateWithOllama, OllamaError } from './ollama';
 import { generateRuleBasedResponse } from './fallback-rules';
+import { distillToolContextForLLM } from './context-distiller';
+
+export interface LLMLatencyMetrics {
+  totalDurationMs: number;
+  loadDurationMs?: number;
+  promptEvalCount?: number;
+  promptEvalDurationMs?: number;
+  evalDurationMs?: number;
+  evalCount?: number;
+}
 
 export interface LLMResult {
   text: string;
@@ -8,6 +18,7 @@ export interface LLMResult {
   model: string;
   executionTimeMs: number;
   escalated: boolean;
+  metrics?: LLMLatencyMetrics;
 }
 
 export interface SynthesizeOptions {
@@ -26,12 +37,31 @@ CORE RULES:
 5. Provide actionable, practical safety advice for fishermen, navigators, and maritime operators.
 6. Keep answers concise, clear, and professional. Use markdown formatting with bullet points.`;
 
+function formatErrorDetail(err: unknown): string {
+  if (err instanceof OllamaError) {
+    return `[${err.code}] ${err.message}`;
+  }
+  if (err instanceof Error) {
+    if (err.message.includes('429') || err.message.includes('RESOURCE_EXHAUSTED')) {
+      return '[QUOTA_EXHAUSTED_429] Gemini API rate quota reached';
+    }
+    if (err.name === 'AbortError' || err.message.includes('timeout') || err.message.includes('timed out')) {
+      return '[TIMEOUT] Request exceeded deadline';
+    }
+    if (err.message.includes('ECONNREFUSED') || err.message.includes('fetch failed')) {
+      return '[CONNECTION_REFUSED] Service endpoint unreachable';
+    }
+    return `[ERROR] ${err.message}`;
+  }
+  return String(err);
+}
+
 /**
  * Dispatches LLM inference across the prioritized fallback hierarchy:
  * 1. Gemini 3.8 Flash (Primary)
- * 2. Ollama qwen3.5:4b (Local Primary Fallback)
+ * 2. Ollama qwen3.5:4b (Local Primary Fallback, 90s timeout, think: false)
  * 3. Ollama llama3.2:1b (Local Secondary Fallback)
- * 4. Deterministic Rule Synthesizer (Guaranteed Fallback)
+ * 4. Deterministic Rule Synthesizer (Guaranteed Safe Fallback)
  */
 export async function synthesizeMarineResponse({
   userPrompt,
@@ -39,12 +69,12 @@ export async function synthesizeMarineResponse({
   toolData,
   escalate = false,
 }: SynthesizeOptions): Promise<LLMResult> {
-  const contextPayload = JSON.stringify(toolData, null, 2);
+  const contextSummary = distillToolContextForLLM(toolData);
   const prompt = `User Request: "${userPrompt}"
 Identified Intent: ${intent}
 
 VERIFIED TOOL DATA & SENSOR MEASUREMENTS:
-${contextPayload}
+${contextSummary}
 
 Explain this verified data clearly to the user, highlighting safety conditions, boundary proximity, and actionable tactical recommendations according to your instructions.`;
 
@@ -64,17 +94,24 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
       model: res.model,
       executionTimeMs: res.executionTimeMs,
       escalated: escalate,
+      metrics: {
+        totalDurationMs: res.executionTimeMs,
+      },
     };
   } catch (geminiError) {
-    console.warn('[Aurexo LLM Dispatcher] Gemini unavailable or timed out, trying Ollama qwen3.5:4b...', geminiError);
+    console.warn(
+      `[Aurexo LLM Dispatcher] Gemini unavailable: ${formatErrorDetail(geminiError)}. Failing over to local Ollama (${process.env.OLLAMA_PRIMARY_MODEL || 'llama3.2:3b'})...`
+    );
   }
 
-  // Step 2: Attempt Local Ollama (qwen3.5:4b)
+  // Step 2: Attempt Local Ollama (llama3.2:3b) with think: false and 90s timeout
   try {
-    const primaryOllamaModel = process.env.OLLAMA_PRIMARY_MODEL || 'qwen3.5:4b';
+    const primaryOllamaModel = process.env.OLLAMA_PRIMARY_MODEL || 'llama3.2:3b';
     const res = await generateWithOllama(prompt, {
       model: primaryOllamaModel,
       systemInstruction: SYSTEM_INSTRUCTION,
+      think: false,
+      keepAlive: '10m',
     });
     return {
       text: res.text,
@@ -82,9 +119,19 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
       model: res.model,
       executionTimeMs: res.executionTimeMs,
       escalated: false,
+      metrics: {
+        totalDurationMs: res.totalDurationMs ?? res.executionTimeMs,
+        loadDurationMs: res.loadDurationMs,
+        promptEvalCount: res.promptEvalCount,
+        promptEvalDurationMs: res.promptEvalDurationMs,
+        evalDurationMs: res.evalDurationMs,
+        evalCount: res.evalCount,
+      },
     };
   } catch (qwenError) {
-    console.warn('[Aurexo LLM Dispatcher] Ollama qwen3.5:4b failed, trying llama3.2:1b...', qwenError);
+    console.warn(
+      `[Aurexo LLM Dispatcher] Ollama ${process.env.OLLAMA_PRIMARY_MODEL || 'qwen3.5:4b'} failed: ${formatErrorDetail(qwenError)}. Trying secondary Ollama (${process.env.OLLAMA_FALLBACK_MODEL || 'llama3.2:1b'})...`
+    );
   }
 
   // Step 3: Attempt Local Ollama Secondary (llama3.2:1b)
@@ -93,6 +140,8 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
     const res = await generateWithOllama(prompt, {
       model: fallbackOllamaModel,
       systemInstruction: SYSTEM_INSTRUCTION,
+      think: false,
+      keepAlive: '10m',
     });
     return {
       text: res.text,
@@ -100,9 +149,19 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
       model: res.model,
       executionTimeMs: res.executionTimeMs,
       escalated: false,
+      metrics: {
+        totalDurationMs: res.totalDurationMs ?? res.executionTimeMs,
+        loadDurationMs: res.loadDurationMs,
+        promptEvalCount: res.promptEvalCount,
+        promptEvalDurationMs: res.promptEvalDurationMs,
+        evalDurationMs: res.evalDurationMs,
+        evalCount: res.evalCount,
+      },
     };
   } catch (llamaError) {
-    console.warn('[Aurexo LLM Dispatcher] Ollama llama3.2:1b failed, falling back to rule synthesizer...', llamaError);
+    console.warn(
+      `[Aurexo LLM Dispatcher] Ollama ${process.env.OLLAMA_FALLBACK_MODEL || 'llama3.2:1b'} failed: ${formatErrorDetail(llamaError)}. Cascading to deterministic rule synthesizer...`
+    );
   }
 
   // Step 4: Deterministic Rule-Based Fallback
@@ -115,11 +174,15 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
     hazards: toolData.hazards,
   });
 
+  const durationMs = Date.now() - startTime;
   return {
     text: ruleText,
     provider: 'rule_fallback',
     model: 'deterministic-rules-v1',
-    executionTimeMs: Date.now() - startTime,
+    executionTimeMs: durationMs,
     escalated: false,
+    metrics: {
+      totalDurationMs: durationMs,
+    },
   };
 }

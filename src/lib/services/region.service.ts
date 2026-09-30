@@ -1,4 +1,5 @@
-import { RegionMetadata, RegionalState } from '../domain/models';
+import * as turf from '@turf/turf';
+import { GeoCoordinate, RegionMetadata, RegionalState } from '../domain/models';
 import { INDIAN_MARITIME_REGIONS } from '../data/regions';
 import { getMarineService } from './marine.service';
 import { getAlertService } from './alert.service';
@@ -10,6 +11,27 @@ export class RegionService {
   getAllRegions(): RegionMetadata[] {
     return INDIAN_MARITIME_REGIONS;
   }
+
+  findNearestRegion(coord: GeoCoordinate): { region: RegionMetadata; distanceKm: number } {
+    const pt = turf.point([coord.longitude, coord.latitude]);
+    let nearest = INDIAN_MARITIME_REGIONS[0];
+    let minDistance = 999999;
+
+    for (const r of INDIAN_MARITIME_REGIONS) {
+      const rPt = turf.point([r.center.longitude, r.center.latitude]);
+      const dist = turf.distance(pt, rPt, { units: 'kilometers' });
+      if (dist < minDistance) {
+        minDistance = dist;
+        nearest = r;
+      }
+    }
+
+    return {
+      region: nearest,
+      distanceKm: Math.round(minDistance * 10) / 10,
+    };
+  }
+
 
   findRegionByName(nameOrAlias: string): RegionMetadata | null {
     const norm = nameOrAlias.toLowerCase().trim();

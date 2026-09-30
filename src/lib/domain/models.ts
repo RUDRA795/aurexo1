@@ -259,3 +259,101 @@ export interface SessionState {
   lastActiveLayer?: string;
   updatedAt: string;
 }
+
+export type DataStatus = 'LIVE' | 'CACHED' | 'STALE' | 'UNAVAILABLE';
+export type VesselDataStatus = 'LIVE' | 'NO_LIVE_DATA' | 'UNAVAILABLE';
+
+export interface PointWeatherMetrics {
+  status: DataStatus;
+  temperatureCelsius?: number;
+  apparentTemperatureCelsius?: number;
+  relativeHumidityPercent?: number;
+  windSpeedKmh?: number;
+  windDirectionDegrees?: number;
+  windGustsKmh?: number;
+  surfacePressureHpa?: number;
+  precipitationMm?: number;
+  beaufortScale?: number;
+  beaufortDescription?: string;
+  weatherCode?: number;
+  source: DataProvenance;
+}
+
+export interface PointMarineMetrics {
+  status: DataStatus;
+  waveHeightMeters?: number;
+  waveDirectionDegrees?: number;
+  wavePeriodSeconds?: number;
+  waveCategory?: string;
+  swellHeightMeters?: number;
+  swellDirectionDegrees?: number;
+  swellPeriodSeconds?: number;
+  seaSurfaceTemperatureCelsius?: number;
+  currentVelocityKmh?: number;
+  currentDirectionDegrees?: number;
+  isSafeForSmallCraft?: boolean;
+  advisoryText?: string;
+  source: DataProvenance;
+}
+
+export interface PointNearbyVessel {
+  mmsi: string;
+  name: string;
+  vesselType: string;
+  distanceKm: number;
+  distanceNauticalMiles: number;
+  bearingDegrees: number;
+  speedKnots: number;
+  headingDegrees: number;
+  sourceStatus: string;
+  lastUpdated: string;
+}
+
+export interface PointVesselsSummary {
+  status: VesselDataStatus;
+  nearbyCount: number;
+  searchRadiusKm: number;
+  nearby: PointNearbyVessel[];
+  nearest?: {
+    mmsi: string;
+    name: string;
+    vesselType: string;
+    distanceKm: number;
+    distanceNauticalMiles: number;
+    bearingDegrees: number;
+  };
+  source: DataProvenance;
+}
+
+export interface PointLocationContext {
+  regionId?: string;
+  regionName: string;
+  sea?: string;
+  state?: string;
+  distanceToCoastKm?: number;
+  spatialContext: string;
+}
+
+export interface PointSpatialContext {
+  regionName: string;
+  isInsideEEZ: boolean;
+  distanceToIMBLKm: number;
+  nearestNeighborCountry: string;
+  isInsideMarineProtectedArea: boolean;
+  protectedAreaName?: string;
+  riskStatus: string;
+  notes: string;
+}
+
+export interface PointIntelligence {
+  coordinate: GeoCoordinate;
+  timestamp: string;
+  location: PointLocationContext;
+  weather: PointWeatherMetrics;
+  marine: PointMarineMetrics;
+  vessels: PointVesselsSummary;
+  spatial: PointSpatialContext;
+  safety: SafetyAssessment;
+  sources: DataProvenance[];
+}
+

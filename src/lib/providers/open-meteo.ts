@@ -7,6 +7,9 @@ const OpenMeteoMarineCurrentSchema = z.object({
   wave_height: z.number().nullable().optional(),
   wave_direction: z.number().nullable().optional(),
   wave_period: z.number().nullable().optional(),
+  swell_wave_height: z.number().nullable().optional(),
+  swell_wave_direction: z.number().nullable().optional(),
+  swell_wave_period: z.number().nullable().optional(),
   ocean_current_velocity: z.number().nullable().optional(),
   ocean_current_direction: z.number().nullable().optional(),
   sea_surface_temperature: z.number().nullable().optional(),
@@ -21,10 +24,13 @@ const OpenMeteoMarineResponseSchema = z.object({
 const OpenMeteoWeatherCurrentSchema = z.object({
   time: z.string(),
   temperature_2m: z.number().nullable().optional(),
+  apparent_temperature: z.number().nullable().optional(),
+  relative_humidity_2m: z.number().nullable().optional(),
   wind_speed_10m: z.number().nullable().optional(),
   wind_direction_10m: z.number().nullable().optional(),
   wind_gusts_10m: z.number().nullable().optional(),
   surface_pressure: z.number().nullable().optional(),
+  precipitation: z.number().nullable().optional(),
   weather_code: z.number().nullable().optional(),
 });
 
@@ -61,6 +67,11 @@ export function getWaveCategory(heightMeters: number): 'Calm' | 'Moderate' | 'Ro
 
 export interface RawMarineData {
   wave: WaveMetrics;
+  swell?: {
+    heightMeters: number;
+    directionDegrees: number;
+    periodSeconds: number;
+  };
   currents: CurrentMetrics;
   seaSurfaceTemperatureCelsius: number;
   observationTimestamp: string;
@@ -70,7 +81,11 @@ export interface RawMarineData {
 export interface RawWeatherData {
   wind: WindMetrics;
   temperature2mCelsius: number;
+  apparentTemperatureCelsius?: number;
+  relativeHumidityPercent?: number;
   surfacePressureHpa?: number;
+  precipitationMm?: number;
+  weatherCode?: number;
   observationTimestamp: string;
   provenance: DataProvenance;
 }
@@ -79,7 +94,7 @@ export class OpenMeteoMarineAdapter {
   private readonly baseUrl = 'https://marine-api.open-meteo.com/v1/marine';
 
   async fetchMarineMetrics(coord: GeoCoordinate): Promise<RawMarineData> {
-    const url = `${this.baseUrl}?latitude=${coord.latitude}&longitude=${coord.longitude}&current=wave_height,wave_direction,wave_period,ocean_current_velocity,ocean_current_direction,sea_surface_temperature`;
+    const url = `${this.baseUrl}?latitude=${coord.latitude}&longitude=${coord.longitude}&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,ocean_current_velocity,ocean_current_direction,sea_surface_temperature`;
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
@@ -118,6 +133,10 @@ export class OpenMeteoMarineAdapter {
       const currentDirection = c?.ocean_current_direction ?? 0;
       const sst = c?.sea_surface_temperature ?? 28.0;
 
+      const swellHeight = c?.swell_wave_height;
+      const swellDirection = c?.swell_wave_direction;
+      const swellPeriod = c?.swell_wave_period;
+
       return {
         wave: {
           heightMeters: waveHeight,
@@ -125,6 +144,14 @@ export class OpenMeteoMarineAdapter {
           periodSeconds: wavePeriod,
           category: getWaveCategory(waveHeight),
         },
+        swell:
+          swellHeight != null
+            ? {
+                heightMeters: swellHeight,
+                directionDegrees: swellDirection ?? 0,
+                periodSeconds: swellPeriod ?? 0,
+              }
+            : undefined,
         currents: {
           velocityKmh: currentVelocity,
           directionDegrees: currentDirection,
@@ -154,7 +181,7 @@ export class OpenMeteoWeatherAdapter {
   private readonly baseUrl = 'https://api.open-meteo.com/v1/forecast';
 
   async fetchWeatherMetrics(coord: GeoCoordinate): Promise<RawWeatherData> {
-    const url = `${this.baseUrl}?latitude=${coord.latitude}&longitude=${coord.longitude}&current=temperature_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,surface_pressure,weather_code`;
+    const url = `${this.baseUrl}?latitude=${coord.latitude}&longitude=${coord.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,surface_pressure,precipitation,weather_code`;
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
@@ -201,7 +228,11 @@ export class OpenMeteoWeatherAdapter {
           beaufortDescription: beaufort.description,
         },
         temperature2mCelsius: temperature,
+        apparentTemperatureCelsius: c?.apparent_temperature ?? undefined,
+        relativeHumidityPercent: c?.relative_humidity_2m ?? undefined,
         surfacePressureHpa: c?.surface_pressure ?? undefined,
+        precipitationMm: c?.precipitation ?? undefined,
+        weatherCode: c?.weather_code ?? undefined,
         observationTimestamp: c?.time ?? new Date().toISOString(),
         provenance: {
           provider: 'Open-Meteo Atmospheric Forecast API',
@@ -221,3 +252,4 @@ export class OpenMeteoWeatherAdapter {
     }
   }
 }
+

@@ -50,6 +50,7 @@ export default function DashboardPage() {
   // Multi-Agent Swarm Telemetry Inspector
   const [swarmTrace, setSwarmTrace] = useState<AgentSwarmTrace | null>(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState<boolean>(false);
+  const [externalPromptTrigger, setExternalPromptTrigger] = useState<{ prompt: string; timestamp: number } | null>(null);
 
   // Fetch verified marine conditions whenever the selected coordinate changes
   const loadConditions = useCallback(async (coord: GeoCoordinate) => {
@@ -80,6 +81,22 @@ export default function DashboardPage() {
       loadConditions(coord);
     },
     [loadConditions]
+  );
+
+  // Handle "Ask Aurexo" from Point Intelligence popup
+  const handleAskAurexo = useCallback(
+    (coord: GeoCoordinate, initialQuery?: string) => {
+      setSelectedCoordinate(coord);
+      setMapCenter([coord.longitude, coord.latitude]);
+      const prompt =
+        initialQuery ??
+        `Analyze current marine conditions, weather, and safety for selected coordinate ${coord.latitude}°N, ${coord.longitude}°E.`;
+      setExternalPromptTrigger({
+        prompt,
+        timestamp: Date.now(),
+      });
+    },
+    []
   );
 
   // Handle Agent tool output synchronization (bi-directional sync!)
@@ -117,6 +134,7 @@ export default function DashboardPage() {
       <MarineMap
         selectedCoordinate={selectedCoordinate}
         onCoordinateClick={handleCoordinateClick}
+        onAskAurexo={handleAskAurexo}
         mapCenter={mapCenter}
         mapZoom={mapZoom}
         activeLayerOverride={activeLayerOverride}
@@ -146,8 +164,10 @@ export default function DashboardPage() {
           selectedCoordinate={selectedCoordinate}
           onAgentResponse={handleAgentResponse}
           onInspectSwarm={handleInspectSwarm}
+          externalPromptTrigger={externalPromptTrigger}
         />
       </div>
+
 
       {/* 4. Right Floating Multi-Agent Swarm Telemetry Inspector */}
       <AgentInspector

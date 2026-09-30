@@ -20,9 +20,16 @@ interface ChatDrawerProps {
   selectedCoordinate?: GeoCoordinate | null;
   onInspectSwarm?: (trace: AgentSwarmTrace) => void;
   className?: string;
+  externalPromptTrigger?: { prompt: string; timestamp: number } | null;
 }
 
-export function ChatDrawer({ onAgentResponse, selectedCoordinate, onInspectSwarm, className }: ChatDrawerProps) {
+export function ChatDrawer({
+  onAgentResponse,
+  selectedCoordinate,
+  onInspectSwarm,
+  className,
+  externalPromptTrigger,
+}: ChatDrawerProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -38,6 +45,7 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, onInspectSwarm
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastProcessedTriggerRef = useRef<number | null>(null);
 
   // Set client-local time for welcome message on mount without SSR mismatch
   useEffect(() => {
@@ -56,6 +64,21 @@ export function ChatDrawer({ onAgentResponse, selectedCoordinate, onInspectSwarm
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Handle external prompt triggers (e.g. from map point intelligence "Ask Aurexo" button)
+  useEffect(() => {
+    if (
+      externalPromptTrigger?.prompt &&
+      externalPromptTrigger.timestamp !== lastProcessedTriggerRef.current
+    ) {
+      lastProcessedTriggerRef.current = externalPromptTrigger.timestamp;
+      setIsOpen(true);
+      handleSubmit(externalPromptTrigger.prompt);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalPromptTrigger]);
+
+
 
   const handleSubmit = async (promptText: string) => {
     if (!promptText.trim() || isLoading) return;

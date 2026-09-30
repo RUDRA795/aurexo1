@@ -53,3 +53,32 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.7);
 }
+
+/* Aurexo Custom Point Intelligence Popup */
+.maplibregl-popup.aurexo-intel-popup .maplibregl-popup-content {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(203, 213, 225, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 20px 30px -5px rgba(15, 23, 42, 0.22), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  padding: 10px 12px;
+  color: #0f172a;
+  max-width: 320px;
+}
+.maplibregl-popup.aurexo-intel-popup .maplibregl-popup-tip {
+  border-top-color: rgba(255, 255, 255, 0.96);
+}
+.maplibregl-popup.aurexo-intel-popup .maplibregl-popup-close-button {
+  font-size: 16px;
+  color: #64748b;
+  padding: 3px 6px;
+  right: 6px;
+  top: 6px;
+  border-radius: 6px;
+}
+.maplibregl-popup.aurexo-intel-popup .maplibregl-popup-close-button:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+

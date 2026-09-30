@@ -1,6 +1,6 @@
 import * as turf from '@turf/turf';
 import { z } from 'zod';
-import { Vessel, NearestVesselResult, VesselType, GeoCoordinate } from '../domain/models';
+import { Vessel, NearestVesselResult, VesselType, GeoCoordinate, PointVesselsSummary, PointNearbyVessel, VesselDataStatus } from '../domain/models';
 import { AisStreamAdapter } from '../providers/ais-stream';
 import { AisServiceStatus } from '../tools/ais-service';
 
@@ -260,7 +260,74 @@ export class VesselService {
       userCount: this.userRegisteredCatalog.length,
     };
   }
+
+  findNearbyLiveAisVessels(targetCoord: GeoCoordinate, radiusKm: number = 60): PointVesselsSummary {
+    const liveAis = this.aisAdapter.fetchLiveVessels();
+    const status = this.aisAdapter.getAdapterStatus();
+    const targetPoint = turf.point([targetCoord.longitude, targetCoord.latitude]);
+
+    const nearby: PointNearbyVessel[] = [];
+
+    for (const v of liveAis) {
+      const vesselPoint = turf.point([v.position.coordinate.longitude, v.position.coordinate.latitude]);
+      const distKm = turf.distance(targetPoint, vesselPoint, { units: 'kilometers' });
+
+      if (distKm <= radiusKm) {
+        const bearing = turf.bearing(targetPoint, vesselPoint);
+        const normalizedBearing = (Math.round(bearing) + 360) % 360;
+
+        nearby.push({
+          mmsi: v.mmsi,
+          name: v.name,
+          vesselType: v.vesselType,
+          distanceKm: Math.round(distKm * 10) / 10,
+          distanceNauticalMiles: Math.round(distKm * 0.539957 * 10) / 10,
+          bearingDegrees: normalizedBearing,
+          speedKnots: v.position.speedKnots,
+          headingDegrees: v.position.headingDegrees,
+          sourceStatus: 'LIVE_AIS',
+          lastUpdated: v.lastUpdated,
+        });
+      }
+    }
+
+    nearby.sort((a, b) => a.distanceKm - b.distanceKm);
+
+    let summaryStatus: VesselDataStatus = 'NO_LIVE_DATA';
+    if (!status.connected && liveAis.length === 0) {
+      summaryStatus = 'UNAVAILABLE';
+    } else if (nearby.length > 0) {
+      summaryStatus = 'LIVE';
+    } else {
+      summaryStatus = 'NO_LIVE_DATA';
+    }
+
+    return {
+      status: summaryStatus,
+      nearbyCount: nearby.length,
+      searchRadiusKm: radiusKm,
+      nearby,
+      nearest: nearby[0]
+        ? {
+            mmsi: nearby[0].mmsi,
+            name: nearby[0].name,
+            vesselType: nearby[0].vesselType,
+            distanceKm: nearby[0].distanceKm,
+            distanceNauticalMiles: nearby[0].distanceNauticalMiles,
+            bearingDegrees: nearby[0].bearingDegrees,
+          }
+        : undefined,
+      source: {
+        provider: 'AISStream WebSocket Service',
+        endpoint: 'wss://stream.aisstream.io/v0/stream',
+        retrievalTimestamp: new Date().toISOString(),
+        observationTimestamp: status.lastMessageTime ?? new Date().toISOString(),
+        verificationStatus: status.connected ? 'VERIFIED_LIVE' : 'UNAVAILABLE',
+      },
+    };
+  }
 }
+
 
 // Singleton instance
 const GLOBAL_VESSEL_SERVICE_KEY = '__aurexo_vessel_service__';

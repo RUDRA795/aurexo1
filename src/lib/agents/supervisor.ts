@@ -16,7 +16,9 @@ import { runBlueEconomyAgent } from './blue-economy';
 import { findRegionByName, scanActiveRegionalWarnings } from '../tools/regions';
 import { computeSafePassage } from '../geo/routes';
 import { evaluateUnifiedSafety } from '../tools/safety-engine';
+import { getRegionService } from '../services/region.service';
 import { MissionOrchestrator, OrchestratorInput } from '../orchestrator/mission-orchestrator.interface';
+
 
 // Coastal Port Reference Registry
 const COASTAL_ANCHORS: Record<string, { lat: number; lon: number; name: string }> = {
@@ -120,12 +122,37 @@ export async function runSupervisorAgent({
   let targetLocationName: string | undefined;
   let targetCoord: GeoCoordinate | undefined;
 
+  const promptReferencesHere =
+    promptLower.includes('here') ||
+    promptLower.includes('this area') ||
+    promptLower.includes('this location') ||
+    promptLower.includes('this point') ||
+    promptLower.includes('current spot') ||
+    promptLower.includes('selected') ||
+    promptLower.includes('around here');
+
+  // If prompt explicitly refers to "here" or "this location" and userCoordinates is provided, prioritize it
+  if (promptReferencesHere && userCoordinates) {
+    targetCoord = userCoordinates;
+    const { region } = getRegionService().findNearestRegion(targetCoord);
+    targetLocationName = `Selected Point near ${region.name} (${targetCoord.latitude.toFixed(2)}°N, ${targetCoord.longitude.toFixed(2)}°E)`;
+    swarmSteps.push({
+      agentName: 'Supervisor',
+      action: 'Point Coordinate Context Grounded',
+      status: 'completed',
+      detail: `Targeted exact clicked map coordinate: [${targetCoord.latitude}, ${targetCoord.longitude}] in ${region.name}`,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   // Check prompt for explicit location mentions
-  for (const [key, anchor] of Object.entries(COASTAL_ANCHORS)) {
-    if (promptLower.includes(key)) {
-      targetLocationName = anchor.name;
-      targetCoord = { latitude: anchor.lat, longitude: anchor.lon };
-      break;
+  if (!targetCoord) {
+    for (const [key, anchor] of Object.entries(COASTAL_ANCHORS)) {
+      if (promptLower.includes(key)) {
+        targetLocationName = anchor.name;
+        targetCoord = { latitude: anchor.lat, longitude: anchor.lon };
+        break;
+      }
     }
   }
 
@@ -154,11 +181,17 @@ export async function runSupervisorAgent({
   // Fallback to user coordinate or Mumbai default
   if (!targetCoord) {
     targetCoord = userCoordinates ?? { latitude: 18.95, longitude: 72.80 };
-    targetLocationName = userCoordinates ? 'Current Vessel Coordinate' : 'Mumbai Offshore';
+    if (userCoordinates) {
+      const { region } = getRegionService().findNearestRegion(targetCoord);
+      targetLocationName = `Selected Location near ${region.name}`;
+    } else {
+      targetLocationName = 'Mumbai Offshore';
+    }
   }
 
   const locName: string = targetLocationName ?? 'Indian Coastal Waters';
   targetLocationName = locName;
+
 
   // Setup default map action
   let mapCenter: [number, number] = [targetCoord.longitude, targetCoord.latitude];

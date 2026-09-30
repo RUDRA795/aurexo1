@@ -4,12 +4,14 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl, { Map as MapLibreMap, Popup } from 'maplibre-gl';
 import { SatelliteLayerId, GeoCoordinate, MapMarkerAction } from '@/lib/types/domain';
 import { MarineVessel } from '@/lib/types/vessel';
+import { PointIntelligence } from '@/lib/domain/models';
 import { SATELLITE_LAYERS, buildGibsWmsUrl } from '@/lib/tools/satellite-layers';
 import { LayerController } from './LayerController';
 import { Legend } from './Legend';
 
 interface MarineMapProps {
   onCoordinateClick?: (coord: GeoCoordinate) => void;
+  onAskAurexo?: (coord: GeoCoordinate, initialQuery?: string) => void;
   selectedCoordinate?: GeoCoordinate | null;
   mapCenter?: [number, number]; // [lng, lat]
   mapZoom?: number;
@@ -21,7 +23,9 @@ interface MarineMapProps {
 
 export function MarineMap({
   onCoordinateClick,
+  onAskAurexo,
   selectedCoordinate,
+
   mapCenter,
   mapZoom,
   highlightGeometry,
@@ -33,6 +37,13 @@ export function MarineMap({
   const mapRef = useRef<MapLibreMap | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
   const agentMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const pointPopupRef = useRef<maplibregl.Popup | null>(null);
+  const onAskAurexoRef = useRef(onAskAurexo);
+
+  useEffect(() => {
+    onAskAurexoRef.current = onAskAurexo;
+  }, [onAskAurexo]);
+
 
   const [activeLayer, setActiveLayer] = useState<SatelliteLayerId>('none');
   const [showBoundaries, setShowBoundaries] = useState<boolean>(true);
@@ -349,10 +360,170 @@ export function MarineMap({
         latitude: parseFloat(e.lngLat.lat.toFixed(4)),
         longitude: parseFloat(e.lngLat.lng.toFixed(4)),
       };
+
       if (onCoordinateClick) {
         onCoordinateClick(coord);
       }
+
+      // Display real-time point intelligence popup anchored to clicked coordinate
+      if (pointPopupRef.current) {
+        pointPopupRef.current.remove();
+        pointPopupRef.current = null;
+      }
+
+      const popup = new Popup({
+        offset: 14,
+        closeButton: true,
+        closeOnClick: false,
+        className: 'aurexo-intel-popup',
+      }).setLngLat([coord.longitude, coord.latitude]);
+
+      // 1. Initial loading container
+      const loadingContainer = document.createElement('div');
+      loadingContainer.style.cssText = 'font-family: inherit; font-size: 11px; color: #1e293b; padding: 2px; min-width: 240px;';
+      loadingContainer.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          <div style="font-weight: 700; font-size: 11px; color: #0284c7; letter-spacing: 0.05em;">TARGET POINT</div>
+          <div style="font-family: monospace; font-size: 10px; color: #64748b;">${coord.latitude.toFixed(4)}°N, ${coord.longitude.toFixed(4)}°E</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; padding: 12px 0; justify-content: center; color: #0369a1; font-size: 11px; font-weight: 500;">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #0284c7; box-shadow: 0 0 8px #0284c7;"></span>
+          Querying Live Marine & Atmospheric Sensors...
+        </div>
+      `;
+      popup.setDOMContent(loadingContainer).addTo(map);
+      pointPopupRef.current = popup;
+
+      // 2. Fetch verified point intelligence
+      fetch(`/api/marine/point?lat=${coord.latitude}&lon=${coord.longitude}`)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data: PointIntelligence) => {
+          if (!pointPopupRef.current || pointPopupRef.current !== popup) return;
+
+          const content = document.createElement('div');
+          content.style.cssText = 'font-family: inherit; font-size: 11px; color: #1e293b; padding: 2px; min-width: 260px; line-height: 1.4;';
+
+          const riskColor =
+            data.safety.riskLevel === 'Critical Danger'
+              ? '#e11d48'
+              : data.safety.riskLevel === 'Hazardous'
+              ? '#ea580c'
+              : data.safety.riskLevel === 'Caution'
+              ? '#d97706'
+              : '#059669';
+
+          const riskBg =
+            data.safety.riskLevel === 'Critical Danger'
+              ? '#ffe4e6'
+              : data.safety.riskLevel === 'Hazardous'
+              ? '#ffedd5'
+              : data.safety.riskLevel === 'Caution'
+              ? '#fef3c7'
+              : '#d1fae5';
+
+          const weatherHtml = data.weather.status === 'UNAVAILABLE'
+            ? `<div style="color: #64748b; font-style: italic; font-size: 10px; margin-bottom: 6px;">Atmospheric data unavailable</div>`
+            : `
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #f1f5f9; margin-bottom: 6px;">
+                <div><b>Temp:</b> ${data.weather.temperatureCelsius != null ? `${data.weather.temperatureCelsius}°C` : '—'}</div>
+                <div><b>Wind:</b> ${data.weather.windSpeedKmh != null ? `${data.weather.windSpeedKmh} km/h` : '—'}</div>
+                <div><b>Humidity:</b> ${data.weather.relativeHumidityPercent != null ? `${data.weather.relativeHumidityPercent}%` : '—'}</div>
+                <div><b>Gusts:</b> ${data.weather.windGustsKmh != null ? `${data.weather.windGustsKmh} km/h` : '—'}</div>
+              </div>
+            `;
+
+          const marineHtml = data.marine.status === 'UNAVAILABLE'
+            ? `<div style="color: #64748b; font-style: italic; font-size: 10px; margin-bottom: 6px;">Marine data unavailable</div>`
+            : `
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #f1f5f9; margin-bottom: 6px;">
+                <div><b>Wave:</b> ${data.marine.waveHeightMeters != null ? `${data.marine.waveHeightMeters}m` : '—'} <span style="font-size: 9px; color: #64748b;">(${data.marine.waveCategory ?? ''})</span></div>
+                <div><b>Period:</b> ${data.marine.wavePeriodSeconds != null ? `${data.marine.wavePeriodSeconds}s` : '—'}</div>
+                <div><b>SST:</b> ${data.marine.seaSurfaceTemperatureCelsius != null ? `${data.marine.seaSurfaceTemperatureCelsius}°C` : '—'}</div>
+                <div><b>Current:</b> ${data.marine.currentVelocityKmh != null ? `${data.marine.currentVelocityKmh} km/h` : '—'}</div>
+              </div>
+            `;
+
+          const aisHtml = data.vessels.status === 'LIVE'
+            ? `<div style="color: #0284c7; font-weight: 600;">⚓ ${data.vessels.nearbyCount} live AIS vessel(s) within 60 km</div>`
+            : data.vessels.status === 'NO_LIVE_DATA'
+            ? `<div style="color: #64748b; font-style: italic;">No live AIS vessel traffic in 60 km radius</div>`
+            : `<div style="color: #94a3b8; font-style: italic;">AIS telemetry stream offline</div>`;
+
+          content.innerHTML = `
+            <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-weight: 700; font-size: 12px; color: #0284c7;">${data.location.regionName}</div>
+                <span style="background: ${riskBg}; color: ${riskColor}; font-weight: 700; font-size: 9px; padding: 2px 6px; border-radius: 9999px; text-transform: uppercase;">
+                  ${data.safety.riskLevel}
+                </span>
+              </div>
+              <div style="font-size: 10px; color: #64748b; font-family: monospace; margin-top: 1px;">
+                ${coord.latitude.toFixed(4)}°N, ${coord.longitude.toFixed(4)}°E • ${data.location.sea ?? 'Coastal Waters'}
+              </div>
+            </div>
+
+            <div style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">Atmospheric Weather</div>
+            ${weatherHtml}
+
+            <div style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">Sea State & Marine</div>
+            ${marineHtml}
+
+            <div style="display: flex; flex-direction: column; gap: 3px; font-size: 10px; border-top: 1px solid #f1f5f9; padding-top: 6px; margin-bottom: 8px;">
+              <div><b>Border:</b> ${data.spatial.distanceToIMBLKm} km to ${data.spatial.nearestNeighborCountry} IMBL</div>
+              ${aisHtml}
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 9px; color: #64748b; margin-bottom: 8px; font-family: monospace;">
+              <span>Status: <b style="color: #059669;">VERIFIED REAL</b></span>
+              <span>Open-Meteo • AIS</span>
+            </div>
+
+            <button id="btn-ask-aurexo-point" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3); transition: all 0.2s;">
+              ⚡ ASK AUREXO ABOUT THIS LOCATION
+            </button>
+          `;
+
+          const btn = content.querySelector('#btn-ask-aurexo-point');
+          if (btn) {
+            btn.addEventListener('click', () => {
+              if (onAskAurexoRef.current) {
+                onAskAurexoRef.current(
+                  coord,
+                  `Analyze the current marine conditions, weather, nearby vessels, and navigational safety at this selected coordinate: ${coord.latitude}°N, ${coord.longitude}°E (${data.location.regionName}).`
+                );
+              }
+            });
+          }
+
+          popup.setDOMContent(content);
+        })
+        .catch((err) => {
+          if (!pointPopupRef.current || pointPopupRef.current !== popup) return;
+          const errDiv = document.createElement('div');
+          errDiv.style.cssText = 'font-family: inherit; font-size: 11px; color: #b91c1c; padding: 6px; min-width: 240px;';
+          errDiv.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 4px;">Point Telemetry Notice</div>
+            <div style="font-size: 10px; color: #475569;">Selected point: ${coord.latitude.toFixed(4)}°N, ${coord.longitude.toFixed(4)}°E</div>
+            <div style="margin-top: 4px; font-size: 9px; color: #ef4444;">Live telemetry temporarily unavailable: ${err.message}</div>
+            <button id="btn-ask-aurexo-point-err" style="margin-top: 8px; width: 100%; background: #0284c7; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
+              ⚡ Ask Aurexo Copilot
+            </button>
+          `;
+          const errBtn = errDiv.querySelector('#btn-ask-aurexo-point-err');
+          if (errBtn) {
+            errBtn.addEventListener('click', () => {
+              if (onAskAurexoRef.current) {
+                onAskAurexoRef.current(coord, `What is the situation at coordinate ${coord.latitude}°N, ${coord.longitude}°E?`);
+              }
+            });
+          }
+          popup.setDOMContent(errDiv);
+        });
     });
+
 
     return () => {
       map.remove();

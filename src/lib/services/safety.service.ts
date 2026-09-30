@@ -1,4 +1,4 @@
-import { GeoCoordinate, SafetyAssessment, SafetyFactorScore, UnifiedRiskLevel } from '../domain/models';
+import { GeoCoordinate, SafetyAssessment, SafetyFactorScore, UnifiedRiskLevel, MarineObservation } from '../domain/models';
 import { getMarineService } from './marine.service';
 import { checkGeofence } from '../geo/boundaries';
 
@@ -10,6 +10,13 @@ export class SafetyService {
     locationName: string = 'Offshore Sector'
   ): Promise<SafetyAssessment> {
     const observation = await this.marineService.getMarineObservation(coordinate, locationName);
+    return this.evaluateSafetyDirect(coordinate, observation);
+  }
+
+  evaluateSafetyDirect(
+    coordinate: GeoCoordinate,
+    observation: MarineObservation
+  ): SafetyAssessment {
     const geofence = checkGeofence(coordinate);
 
     // 1. Wave Severity (0-100)
@@ -19,6 +26,7 @@ export class SafetyService {
     else if (waveM >= 2.5) waveScore = 75;
     else if (waveM >= 1.5) waveScore = 45;
     else if (waveM >= 0.8) waveScore = 25;
+
 
     // 2. Wind Hazard (0-100)
     const windK = observation.wind.speedKmh;
