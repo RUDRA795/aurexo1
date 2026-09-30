@@ -46,13 +46,23 @@ test('AurexoIntro component satisfies all cinematic overlay requirements', () =>
   assert.ok(content.includes('Skip Intro'), 'Must provide mobile skip affordance');
 });
 
-test('page.tsx mounts AurexoIntro safely as non-blocking overlay over existing app', () => {
-  const pagePath = path.resolve(process.cwd(), 'src/app/page.tsx');
-  const content = fs.readFileSync(pagePath, 'utf-8');
+test('layout.tsx and SiteBackground mount global background video safely', () => {
+  const layoutPath = path.resolve(process.cwd(), 'src/app/layout.tsx');
+  const layoutContent = fs.readFileSync(layoutPath, 'utf-8');
+  assert.ok(layoutContent.includes('SiteBackground'), 'layout.tsx must import SiteBackground');
+  assert.ok(layoutContent.includes('<SiteBackground />'), 'layout.tsx must render <SiteBackground />');
 
-  assert.ok(content.includes('AurexoIntro'), 'page.tsx must import AurexoIntro');
-  assert.ok(content.includes('<AurexoIntro />'), 'page.tsx must render <AurexoIntro />');
-  assert.ok(content.includes('MarineMap'), 'page.tsx must retain MarineMap');
-  assert.ok(content.includes('MarineHUD'), 'page.tsx must retain MarineHUD');
-  assert.ok(content.includes('ChatDrawer'), 'page.tsx must retain ChatDrawer');
+  const bgPath = path.resolve(process.cwd(), 'src/components/layout/SiteBackground.tsx');
+  const bgContent = fs.readFileSync(bgPath, 'utf-8');
+  assert.ok(bgContent.includes('/videos/aurexo-intro.mp4'), 'SiteBackground must use aurexo-intro.mp4');
+  assert.ok(bgContent.includes('autoPlay'), 'SiteBackground video must have autoPlay');
+  assert.ok(bgContent.includes('muted'), 'SiteBackground video must be muted');
+  assert.ok(bgContent.includes('loop'), 'SiteBackground video must loop');
+
+  const dashboardPath = path.resolve(process.cwd(), 'src/app/dashboard/page.tsx');
+  const dashboardContent = fs.readFileSync(dashboardPath, 'utf-8');
+  assert.ok(dashboardContent.includes('MarineMap'), 'dashboard must render MarineMap');
+  assert.ok(dashboardContent.includes('MarineHUD'), 'dashboard must render MarineHUD');
+  assert.ok(dashboardContent.includes('ChatDrawer'), 'dashboard must render ChatDrawer');
 });
+

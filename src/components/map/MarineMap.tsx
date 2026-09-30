@@ -150,6 +150,38 @@ export function MarineMap({
         paint: { 'raster-opacity': 0.8 },
       });
 
+      // 3b. Add INCOIS Coral Reefs WMS Source & Layer
+      if (SATELLITE_LAYERS.incois_coral.tileUrl) {
+        map.addSource('incois-coral', {
+          type: 'raster',
+          tiles: [SATELLITE_LAYERS.incois_coral.tileUrl],
+          tileSize: 256,
+        });
+        map.addLayer({
+          id: 'layer-incois_coral',
+          type: 'raster',
+          source: 'incois-coral',
+          layout: { visibility: 'none' },
+          paint: { 'raster-opacity': 0.85 },
+        });
+      }
+
+      // 3c. Add INCOIS PFZ Advisories WMS Source & Layer
+      if (SATELLITE_LAYERS.incois_pfz.tileUrl) {
+        map.addSource('incois-pfz', {
+          type: 'raster',
+          tiles: [SATELLITE_LAYERS.incois_pfz.tileUrl],
+          tileSize: 256,
+        });
+        map.addLayer({
+          id: 'layer-incois_pfz',
+          type: 'raster',
+          source: 'incois-pfz',
+          layout: { visibility: 'none' },
+          paint: { 'raster-opacity': 0.85 },
+        });
+      }
+
       // 4. Load EEZ & IMBL Boundaries GeoJSON
       map.addSource('maritime-boundaries', {
         type: 'geojson',
@@ -333,7 +365,7 @@ export function MarineMap({
     const map = mapRef.current;
     if (!map || !isMapLoaded) return;
 
-    const layers: SatelliteLayerId[] = ['truecolor', 'sst', 'chlorophyll'];
+    const layers: SatelliteLayerId[] = ['truecolor', 'sst', 'chlorophyll', 'incois_coral', 'incois_pfz'];
     layers.forEach((layerId) => {
       const fullLayerId = `layer-${layerId}`;
       if (map.getLayer(fullLayerId)) {

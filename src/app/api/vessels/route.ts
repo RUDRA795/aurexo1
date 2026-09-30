@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getAllVessels,
+  getFleetAisTelemetry,
   findVesselByNameOrMMSI,
   findNearestVessel,
   registerUserVessel,
@@ -37,7 +38,8 @@ export async function GET(request: NextRequest) {
     }
 
     const fleet = getAllVessels();
-    return NextResponse.json({ count: fleet.length, fleet });
+    const aisTelemetry = getFleetAisTelemetry();
+    return NextResponse.json({ count: fleet.length, fleet, aisTelemetry });
   } catch (error) {
     console.error('Error in /api/vessels GET:', error);
     return NextResponse.json({ error: 'Failed to retrieve vessels', details: String(error) }, { status: 500 });

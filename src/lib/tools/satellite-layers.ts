@@ -55,6 +55,24 @@ export const SATELLITE_LAYERS: Record<SatelliteLayerId, SatelliteLayerConfig> = 
       gradient: 'linear-gradient(to right, #081d58, #253494, #225ea8, #1d91c0, #41b6c4, #7fcdbb, #c7e9b4, #ffffcc)',
     },
   },
+  incois_coral: {
+    id: 'incois_coral',
+    name: 'INCOIS Coral Reefs',
+    description: 'Official INCOIS marine atlas coral reef distribution & conservation areas',
+    layerType: 'satellite-derived layer',
+    wmsLayerName: 'EnergyAtlas:CORAL_AREAS',
+    tileUrl: 'https://incois.gov.in/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=EnergyAtlas:CORAL_AREAS&SRS=EPSG:3857&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}',
+    attribution: 'Indian National Centre for Ocean Information Services (INCOIS)',
+  },
+  incois_pfz: {
+    id: 'incois_pfz',
+    name: 'INCOIS PFZ Advisories',
+    description: 'Official INCOIS Potential Fishing Zone advisory demarcation lines',
+    layerType: 'satellite-derived layer',
+    wmsLayerName: 'PFZ_Automation:pfzlines',
+    tileUrl: 'https://incois.gov.in/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=PFZ_Automation:pfzlines&SRS=EPSG:3857&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}',
+    attribution: 'Ministry of Earth Sciences / INCOIS PFZ Mission',
+  },
 };
 
 /**

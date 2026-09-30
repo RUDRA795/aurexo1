@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { runSupervisorAgent } from '@/lib/agents/supervisor';
-import { GeoCoordinate, SessionContext } from '@/lib/types/domain';
+import { missionOrchestrator } from '@/lib/agents/supervisor';
+import { getSessionService } from '@/lib/services/session.service';
+import { GeoCoordinate, SessionContext, SatelliteLayerId } from '@/lib/types/domain';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,12 +18,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await runSupervisorAgent({
+    const sessionService = getSessionService();
+    const resolvedSession = sessionService.resolveSessionContext(sessionContext);
+
+    const result = await missionOrchestrator.dispatch({
       prompt: prompt.trim(),
       userCoordinates: coordinate,
       conversationHistory,
-      sessionContext,
+      sessionContext: {
+        lastCoordinates: resolvedSession.lastCoordinates,
+        lastLocationName: resolvedSession.lastLocationName,
+        lastActiveLayer: resolvedSession.lastActiveLayer as SatelliteLayerId | undefined,
+      },
     });
+
+    if (result.sessionContext && resolvedSession.sessionId) {
+      sessionService.updateSession(resolvedSession.sessionId, {
+        lastCoordinates: result.sessionContext.lastCoordinates,
+        lastLocationName: result.sessionContext.lastLocationName,
+        lastActiveLayer: result.sessionContext.lastActiveLayer,
+      });
+    }
 
     return NextResponse.json(result);
   } catch (error) {

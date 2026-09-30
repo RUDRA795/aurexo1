@@ -39,3 +39,15 @@ test('computeSafePassage produces valid waypoint corridor and distance', () => {
   assert.equal(plan.routeGeometry.coordinates.length, 6);
   assert.ok(plan.overallSafety === 'Safe' || plan.overallSafety === 'Caution');
 });
+
+test('computeSafePassage handles multi-port transit from Mumbai to Goa', () => {
+  const mumbai = { latitude: 18.95, longitude: 72.80 };
+  const goa = { latitude: 15.49, longitude: 73.80 };
+  const plan = computeSafePassage(mumbai, goa, 22);
+
+  assert.ok(plan.totalDistanceKm > 350 && plan.totalDistanceKm < 500);
+  assert.equal(plan.waypoints.length, 6);
+  assert.equal(plan.routeGeometry.type, 'LineString');
+  assert.ok(plan.intermediateRiskAssessments.length > 0);
+  assert.ok(plan.advisory.length > 0);
+});

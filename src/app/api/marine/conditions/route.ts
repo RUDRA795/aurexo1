@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchMarineConditions } from '@/lib/tools/marine-conditions';
+import { getMarineService } from '@/lib/services/marine.service';
 import { GeoCoordinate } from '@/lib/types/domain';
 
 export async function GET(request: NextRequest) {
@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
     }
 
     const coordinate: GeoCoordinate = { latitude, longitude };
-    const conditions = await fetchMarineConditions(coordinate, locationName);
+    const marineService = getMarineService();
+    const conditions = await marineService.getMarineObservation(coordinate, locationName);
 
     return NextResponse.json(conditions);
   } catch (error) {

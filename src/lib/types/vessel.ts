@@ -7,7 +7,7 @@ export type VesselType =
   | 'Coast Guard Patrol'
   | 'Cargo / Tanker';
 
-export type VesselSourceStatus = 'LIVE_AIS' | 'USER_REGISTERED' | 'SIMULATED_TEST';
+export type VesselSourceStatus = 'LIVE_AIS' | 'USER_REGISTERED' | 'STALE' | 'UNAVAILABLE' | 'SIMULATED_TEST';
 
 export interface MarineVessel {
   id: string;

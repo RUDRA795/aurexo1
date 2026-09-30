@@ -16,6 +16,7 @@ import { runBlueEconomyAgent } from './blue-economy';
 import { findRegionByName, scanActiveRegionalWarnings } from '../tools/regions';
 import { computeSafePassage } from '../geo/routes';
 import { evaluateUnifiedSafety } from '../tools/safety-engine';
+import { MissionOrchestrator, OrchestratorInput } from '../orchestrator/mission-orchestrator.interface';
 
 // Coastal Port Reference Registry
 const COASTAL_ANCHORS: Record<string, { lat: number; lon: number; name: string }> = {
@@ -34,6 +35,59 @@ const COASTAL_ANCHORS: Record<string, { lat: number; lon: number; name: string }
   paradeep: { lat: 20.31, lon: 86.61, name: 'Paradeep Coast (Odisha)' },
   kandla: { lat: 23.00, lon: 70.22, name: 'Kandla (Deendayal Port)' },
 };
+
+function parseRouteEndpoints(
+  prompt: string,
+  defaultOrigin: GeoCoordinate,
+  defaultOriginName: string
+): {
+  origin: GeoCoordinate;
+  destination: GeoCoordinate;
+  originName: string;
+  destName: string;
+} {
+  const lower = prompt.toLowerCase();
+
+  // Try pattern: "from [origin] to [dest]"
+  const fromToMatch = lower.match(/(?:from|between)\s+([a-zA-Z\s]+?)\s+(?:to|and)\s+([a-zA-Z\s]+)/i);
+  let originAnchor: { lat: number; lon: number; name: string } | undefined;
+  let destAnchor: { lat: number; lon: number; name: string } | undefined;
+
+  if (fromToMatch) {
+    const rawOrigin = fromToMatch[1].trim();
+    const rawDest = fromToMatch[2].trim();
+    for (const [key, anchor] of Object.entries(COASTAL_ANCHORS)) {
+      if (rawOrigin.includes(key) && !originAnchor) originAnchor = anchor;
+      if (rawDest.includes(key) && !destAnchor) destAnchor = anchor;
+    }
+  }
+
+  // Fallback: check if any two anchors appear anywhere in prompt
+  if (!originAnchor || !destAnchor) {
+    const foundAnchors: Array<{ lat: number; lon: number; name: string }> = [];
+    for (const [key, anchor] of Object.entries(COASTAL_ANCHORS)) {
+      if (lower.includes(key)) {
+        foundAnchors.push(anchor);
+      }
+    }
+    if (foundAnchors.length >= 2) {
+      originAnchor = foundAnchors[0];
+      destAnchor = foundAnchors[1];
+    } else if (foundAnchors.length === 1 && !originAnchor) {
+      originAnchor = foundAnchors[0];
+    }
+  }
+
+  const origin = originAnchor ? { latitude: originAnchor.lat, longitude: originAnchor.lon } : defaultOrigin;
+  const originName = originAnchor ? originAnchor.name : defaultOriginName;
+
+  const destination = destAnchor
+    ? { latitude: destAnchor.lat, longitude: destAnchor.lon }
+    : { latitude: origin.latitude - 0.45, longitude: origin.longitude + 0.35 };
+  const destName = destAnchor ? destAnchor.name : 'Offshore Seaward Waypoint';
+
+  return { origin, destination, originName, destName };
+}
 
 export interface SupervisorInput {
   prompt: string;
@@ -210,20 +264,26 @@ export async function runSupervisorAgent({
   // =========================================================================
   // SCENARIO 3: Navigational Route Passage Query
   // =========================================================================
-  else if (promptLower.includes('route') || promptLower.includes('passage') || promptLower.includes('corridor')) {
+  else if (
+    promptLower.includes('route') ||
+    promptLower.includes('passage') ||
+    promptLower.includes('corridor') ||
+    promptLower.includes('travel from') ||
+    promptLower.includes('sail from') ||
+    promptLower.includes('navigate from')
+  ) {
     toolsUsed.push('compute_safe_passage');
+    const { origin, destination, originName, destName } = parseRouteEndpoints(prompt, targetCoord, locName);
+
     swarmSteps.push({
       agentName: 'SpatialSentinel',
       action: 'Compute Great-Circle Passage Corridor',
       status: 'executing',
-      detail: `Generating safe passage waypoints from ${targetLocationName}`,
+      detail: `Generating safe passage waypoints between ${originName} and ${destName}`,
       timestamp: new Date().toISOString(),
     });
 
-    // Destination ~45 km seaward
-    const destLat = targetCoord.latitude - 0.35;
-    const destLon = targetCoord.longitude + 0.28;
-    const route = computeSafePassage(targetCoord, { latitude: destLat, longitude: destLon });
+    const route = computeSafePassage(origin, destination);
     toolData.route = route;
     highlightGeometry = route.routeGeometry;
 
@@ -233,16 +293,43 @@ export async function runSupervisorAgent({
       retrievedAt: new Date().toISOString(),
     });
 
+    // Also sample live marine conditions at origin
+    try {
+      const oceanOrigin = await runOceanAgent(origin, originName);
+      toolData.originConditions = oceanOrigin.observation;
+      swarmSteps.push(...oceanOrigin.steps);
+      if (oceanOrigin.observation) {
+        evidenceSources.push({
+          name: `Open-Meteo Sea State (${originName})`,
+          status: 'VERIFIED_LIVE',
+          retrievedAt: oceanOrigin.observation.retrievedAt,
+        });
+      }
+    } catch {
+      // Non-blocking
+    }
+
     swarmSteps.push({
       agentName: 'SpatialSentinel',
       action: 'Passage Route Validated',
       status: route.overallSafety === 'Safe' ? 'completed' : 'flagged',
-      detail: `Distance: ${route.totalDistanceKm} km. Overall risk: ${route.overallSafety}`,
+      detail: `Distance: ${route.totalDistanceKm} km between ${originName} and ${destName}. Overall risk: ${route.overallSafety}`,
       timestamp: new Date().toISOString(),
     });
 
-    suggestedQueries.push('Check weather along this route');
-    suggestedQueries.push('Are there any vessels nearby?');
+    // Center map on the route midpoint
+    mapCenter = [(origin.longitude + destination.longitude) / 2, (origin.latitude + destination.latitude) / 2];
+    mapZoom = route.totalDistanceKm > 400 ? 5.5 : route.totalDistanceKm > 150 ? 6.5 : 7.5;
+
+    markerAction = {
+      coordinates: destination,
+      title: `Destination: ${destName}`,
+      description: `Distance: ${route.totalDistanceKm} km (${route.estimatedTravelTimeHours} hrs). Status: ${route.overallSafety}`,
+      variant: 'point',
+    };
+
+    suggestedQueries.push(`What is the weather along ${originName} to ${destName}?`);
+    suggestedQueries.push(`Are there any vessels near ${originName}?`);
   }
 
   // =========================================================================
@@ -379,3 +466,12 @@ export async function runSupervisorAgent({
     },
   };
 }
+
+export class SupervisorMissionOrchestrator implements MissionOrchestrator {
+  async dispatch(input: OrchestratorInput): Promise<AgentResponse> {
+    return runSupervisorAgent(input);
+  }
+}
+
+export const missionOrchestrator: MissionOrchestrator = new SupervisorMissionOrchestrator();
+

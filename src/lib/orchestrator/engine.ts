@@ -170,17 +170,28 @@ export async function processAgentQuery(
   if (wantsRoute) {
     toolsUsed.push('compute_safe_passage');
     try {
-      // Create destination ~35 km offshore from target
-      const destLat = targetCoord.latitude - 0.3;
-      const destLon = targetCoord.longitude + 0.25;
+      // Check if prompt specifies origin and destination
+      const fromToMatch = promptLower.match(/(?:from|between)\s+([a-zA-Z\s]+?)\s+(?:to|and)\s+([a-zA-Z\s]+)/i);
+      let originCoord: GeoCoordinate = targetCoord;
+      let destCoord: GeoCoordinate = { latitude: targetCoord.latitude - 0.35, longitude: targetCoord.longitude + 0.28 };
+
+      if (fromToMatch) {
+        for (const [key, loc] of Object.entries(COASTAL_LOCATIONS)) {
+          if (fromToMatch[1].includes(key)) originCoord = { latitude: loc.lat, longitude: loc.lon };
+          if (fromToMatch[2].includes(key)) destCoord = { latitude: loc.lat, longitude: loc.lon };
+        }
+      }
+
       const route = await TOOLS.compute_safe_passage.execute({
-        originLat: targetCoord.latitude,
-        originLon: targetCoord.longitude,
-        destLat,
-        destLon,
+        originLat: originCoord.latitude,
+        originLon: originCoord.longitude,
+        destLat: destCoord.latitude,
+        destLon: destCoord.longitude,
       });
       toolData.route = route;
       highlightGeometry = route.routeGeometry;
+      mapCenter = [(originCoord.longitude + destCoord.longitude) / 2, (originCoord.latitude + destCoord.latitude) / 2];
+      mapZoom = route.totalDistanceKm > 300 ? 6 : 7;
       evidenceSources.push({
         name: 'Aurexo Great-Circle Navigational Corridor Engine',
         status: 'VERIFIED_LIVE',

@@ -1,4 +1,4 @@
-export type IntegrationStatus = 'VERIFIED_LIVE' | 'DOCUMENTED_UNVERIFIED' | 'UNAVAILABLE';
+export type IntegrationStatus = 'VERIFIED_LIVE' | 'VERIFIED_LOCAL' | 'DOCUMENTED_UNVERIFIED' | 'UNAVAILABLE';
 
 export interface GeoCoordinate {
   latitude: number;
@@ -34,7 +34,7 @@ export interface MarineObservation {
   advisoryText: string;
 }
 
-export type SatelliteLayerId = 'none' | 'truecolor' | 'sst' | 'chlorophyll';
+export type SatelliteLayerId = 'none' | 'truecolor' | 'sst' | 'chlorophyll' | 'incois_coral' | 'incois_pfz';
 
 export interface SatelliteLayerConfig {
   id: SatelliteLayerId;

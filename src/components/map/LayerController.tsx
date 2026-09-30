@@ -90,6 +90,32 @@ export function LayerController({
         <span>Chlorophyll</span>
       </button>
 
+      <button
+        onClick={() => onSelectLayer('incois_coral')}
+        className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-medium transition-all ${
+          activeLayer === 'incois_coral'
+            ? 'bg-marine-600 text-white shadow-sm'
+            : 'text-slate-700 hover:bg-slate-100/80'
+        }`}
+        title={SATELLITE_LAYERS.incois_coral.description}
+      >
+        <span className="h-2 w-2 rounded-full bg-teal-500 inline-block" />
+        <span>INCOIS Reefs</span>
+      </button>
+
+      <button
+        onClick={() => onSelectLayer('incois_pfz')}
+        className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-medium transition-all ${
+          activeLayer === 'incois_pfz'
+            ? 'bg-marine-600 text-white shadow-sm'
+            : 'text-slate-700 hover:bg-slate-100/80'
+        }`}
+        title={SATELLITE_LAYERS.incois_pfz.description}
+      >
+        <Fish className="h-3.5 w-3.5 text-cyan-600" />
+        <span>INCOIS PFZ</span>
+      </button>
+
       <div className="h-4 w-[1px] bg-slate-200/80 mx-1 hidden sm:block" />
 
       {/* Vector Overlays */}

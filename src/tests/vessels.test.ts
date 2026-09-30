@@ -14,7 +14,7 @@ test('getAllVessels returns live baseline Indian fleet', () => {
   const sagarKanya = vessels.find((v) => v.name.toLowerCase().includes('sagar kanya'));
   assert.ok(sagarKanya);
   assert.equal(sagarKanya.vesselType, 'Research Vessel');
-  assert.equal(sagarKanya.sourceStatus, 'LIVE_AIS');
+  assert.equal(sagarKanya.sourceStatus, 'USER_REGISTERED');
 });
 
 test('findVesselByNameOrMMSI matches by name fragment and exact MMSI', () => {
