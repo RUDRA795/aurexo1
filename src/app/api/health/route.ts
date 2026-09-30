@@ -7,9 +7,10 @@ export async function GET() {
   let availableOllamaModels: string[] = [];
 
   try {
+    const baseUrl = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch('http://127.0.0.1:11434/api/tags', { signal: controller.signal });
+    const res = await fetch(`${baseUrl}/api/tags`, { signal: controller.signal });
     clearTimeout(timeoutId);
     if (res.ok) {
       const data = await res.json();
@@ -31,7 +32,7 @@ export async function GET() {
     localLLM: {
       provider: 'Ollama',
       status: ollamaStatus,
-      primaryModel: process.env.OLLAMA_PRIMARY_MODEL || 'qwen3.5:4b',
+      primaryModel: process.env.OLLAMA_PRIMARY_MODEL || 'llama3.2:3b',
       availableModels: availableOllamaModels,
     },
     verifiedDataSources: [
