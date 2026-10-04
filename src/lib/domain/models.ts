@@ -1,6 +1,6 @@
 /**
- * AUREXO CANONICAL DOMAIN MODELS
- * Single source of truth for all domain entities across Aurexo.
+ * ORCA CANONICAL DOMAIN MODELS
+ * Single source of truth for all domain entities across ORCA Marine Intelligence Platform.
  * ONE FACT -> ONE CANONICAL DOMAIN OBJECT -> MANY PROJECTIONS.
  */
 

@@ -21,6 +21,7 @@ export function SiteBackground() {
         preload="auto"
         className="h-full w-full object-cover scale-105 opacity-85 transition-opacity duration-700"
       >
+        <source src="/videos/orca-intro.mp4" type="video/mp4" />
         <source src="/videos/aurexo-intro.mp4" type="video/mp4" />
       </video>
 

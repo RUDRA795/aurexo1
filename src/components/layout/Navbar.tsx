@@ -46,12 +46,16 @@ export function Navbar() {
       <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 md:px-6">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/25 bg-white/10 shadow-sm transition-all group-hover:border-white/40 group-hover:bg-white/20">
-            <Anchor className="h-4 w-4 text-slate-100" />
+          <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-cyan-400/40 bg-slate-900/80 shadow-md shadow-cyan-500/20 transition-all group-hover:scale-105 group-hover:border-cyan-300">
+            <img
+              src="/images/orca-logo-circle.png"
+              alt="ORCA Logo"
+              className="h-full w-full object-cover"
+            />
           </div>
-          <span className="font-mono text-lg font-bold tracking-wider text-white">
-            AUREXO
-            <span className="ml-1.5 rounded-full border border-white/20 bg-white/10 px-1.5 py-0.5 text-[9px] font-medium tracking-widest text-slate-200">
+          <span className="font-mono text-xl font-extrabold tracking-wider text-white">
+            ORCA
+            <span className="ml-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-widest text-cyan-300">
               MARINE AI
             </span>
           </span>
@@ -78,14 +82,14 @@ export function Navbar() {
           })}
         </div>
 
-        {/* Ask Aurexo CTA + hamburger */}
+        {/* Ask ORCA CTA + hamburger */}
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
             className="hidden items-center gap-2 rounded-lg bg-white/95 px-4 py-1.5 text-sm font-semibold text-slate-950 shadow-md transition-all hover:bg-white hover:shadow-lg active:scale-95 md:flex"
           >
             <MessageSquare className="h-4 w-4 text-slate-900" />
-            Ask Aurexo
+            Ask ORCA
           </Link>
 
           {/* Live indicator */}
@@ -132,7 +136,7 @@ export function Navbar() {
             className="mt-2 flex items-center justify-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-300"
           >
             <MessageSquare className="h-4 w-4" />
-            Ask Aurexo
+            Ask ORCA
           </Link>
         </div>
       )}

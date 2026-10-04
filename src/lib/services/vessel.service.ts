@@ -330,7 +330,7 @@ export class VesselService {
 
 
 // Singleton instance
-const GLOBAL_VESSEL_SERVICE_KEY = '__aurexo_vessel_service__';
+const GLOBAL_VESSEL_SERVICE_KEY = '__orca_vessel_service__';
 export function getVesselService(): VesselService {
   const g = globalThis as unknown as Record<string, VesselService | undefined>;
   if (!g[GLOBAL_VESSEL_SERVICE_KEY]) {

@@ -22,7 +22,7 @@ export class ImdAdapter {
       affectedRegion: `${regionName} (Indian Maritime Waters)`,
       headline: 'IMD Programmatic Feed: UNAVAILABLE (Direct API Credentials Required)',
       description:
-        'Direct automated JSON endpoints for IMD cyclone bulletins require MoES institutional credentials. Live dynamic marine hazards in Aurexo are derived strictly from verified Open-Meteo physical wind/wave thresholds.',
+        'Direct automated JSON endpoints for IMD cyclone bulletins require MoES institutional credentials. Live dynamic marine hazards in ORCA are derived strictly from verified Open-Meteo physical wind/wave thresholds.',
       issuedAt: new Date().toISOString(),
       validUntil: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
       recommendedAction:

@@ -57,7 +57,7 @@ export class SessionService {
 }
 
 // Singleton instance
-const GLOBAL_SESSION_SERVICE_KEY = '__aurexo_session_service__';
+const GLOBAL_SESSION_SERVICE_KEY = '__orca_session_service__';
 export function getSessionService(): SessionService {
   const g = globalThis as unknown as Record<string, SessionService | undefined>;
   if (!g[GLOBAL_SESSION_SERVICE_KEY]) {

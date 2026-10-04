@@ -132,7 +132,7 @@ export class SafetyService {
 }
 
 // Singleton instance
-const GLOBAL_SAFETY_SERVICE_KEY = '__aurexo_safety_service__';
+const GLOBAL_SAFETY_SERVICE_KEY = '__orca_safety_service__';
 export function getSafetyService(): SafetyService {
   const g = globalThis as unknown as Record<string, SafetyService | undefined>;
   if (!g[GLOBAL_SAFETY_SERVICE_KEY]) {

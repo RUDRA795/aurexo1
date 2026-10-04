@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Compass, Waves, Wind, Thermometer, Radio, Cpu, Activity } from 'lucide-react';
+import { Compass, Waves, Wind, Thermometer, Radio, Cpu, Activity, FileCheck } from 'lucide-react';
 import { MarineObservation, GeofenceCheckResult } from '@/lib/types/domain';
 import { RiskIndicator } from './RiskIndicator';
 
@@ -13,6 +13,7 @@ interface MarineHUDProps {
   onToggleInspector?: () => void;
   isInspectorOpen?: boolean;
   swarmStepsCount?: number;
+  onOpenManifest?: () => void;
 }
 
 export function MarineHUD({
@@ -23,6 +24,7 @@ export function MarineHUD({
   onToggleInspector,
   isInspectorOpen,
   swarmStepsCount,
+  onOpenManifest,
 }: MarineHUDProps) {
   const wave = currentObservation?.wave;
   const wind = currentObservation?.wind;
@@ -33,18 +35,18 @@ export function MarineHUD({
     <header className="glass-pearl flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-2.5 shadow-pearl-md">
       {/* Brand Identity */}
       <div className="flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-marine-600 text-white shadow-sm">
-          <Compass className="h-4 w-4 animate-spin-slow" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/30 overflow-hidden shadow-sm">
+          <img src="/images/orca-logo-circle.png" alt="ORCA" className="h-full w-full object-cover" />
         </div>
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-extrabold tracking-tight text-slate-900">AUREXO</span>
+            <span className="text-sm font-extrabold tracking-tight text-slate-900">ORCA</span>
             <span className="rounded bg-marine-100 px-1.5 py-0.2 text-[10px] font-semibold text-marine-700">
               SIH26176
             </span>
           </div>
           <p className="text-[10px] font-medium text-slate-500">
-            {currentObservation?.locationName ?? 'Autonomous Marine Intelligence'}
+            {currentObservation?.locationName ?? 'Collaborative Marine Intelligence'}
           </p>
         </div>
       </div>
@@ -101,6 +103,17 @@ export function MarineHUD({
       {/* Status, Inspector Toggle & Active LLM Info */}
       <div className="flex items-center gap-2">
         <RiskIndicator geofence={geofence} waveHeight={wave?.heightMeters} />
+
+        {onOpenManifest && (
+          <button
+            onClick={onOpenManifest}
+            className="flex items-center gap-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-1 text-[11px] font-semibold transition-all hover:scale-102 active:scale-98"
+            title="Generate Digital Port State Control Voyage Clearance"
+          >
+            <FileCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="hidden md:inline">Voyage Manifest</span>
+          </button>
+        )}
 
         {onToggleInspector && (
           <button

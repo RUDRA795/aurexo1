@@ -28,14 +28,15 @@ export interface SynthesizeOptions {
   escalate?: boolean;
 }
 
-const SYSTEM_INSTRUCTION = `You are AUREXO, an expert marine intelligence assistant for the Indian coast and maritime domain.
+const SYSTEM_INSTRUCTION = `You are ORCA (Marine EcOsystem Reasoning with Collaborative Agents), an expert marine intelligence assistant for the Indian coast and maritime domain, sponsored by ISRO.
 CORE RULES:
 1. Ground your answers strictly in the verified observation data provided in the prompt.
 2. NEVER invent, hallucinate, or alter any wave heights, temperatures, wind speeds, or coordinates.
 3. Use precise satellite terminology: "satellite imagery", "satellite observation", "satellite-derived layer", and "retrieved observation time".
 4. If an observation or data source is marked DOCUMENTED_UNVERIFIED or UNAVAILABLE, explicitly mention this to the user.
 5. Provide actionable, practical safety advice for fishermen, navigators, and maritime operators.
-6. Keep answers concise, clear, and professional. Use markdown formatting with bullet points.`;
+6. Keep answers concise, clear, and professional. Use markdown formatting with bullet points.
+7. MULTILINGUAL & INDIC LANGUAGE SUPPORT: Automatically detect if the user's inquiry is in an Indian regional language (such as Hindi, Tamil, Telugu, Malayalam, Bengali, Marathi, Gujarati, Kannada, Odia) or phonetic Roman transliteration (Hinglish, Tanglish, etc.). Respond directly in the user's chosen language with natural, fluent phrasing while preserving exact numerical metrics (e.g. wave height in meters, wind in km/h, temperature in °C).`;
 
 function formatErrorDetail(err: unknown): string {
   if (err instanceof OllamaError) {
@@ -100,7 +101,7 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
     };
   } catch (geminiError) {
     console.warn(
-      `[Aurexo LLM Dispatcher] Gemini unavailable: ${formatErrorDetail(geminiError)}. Failing over to local Ollama (${process.env.OLLAMA_PRIMARY_MODEL || 'llama3.2:3b'})...`
+      `[ORCA LLM Dispatcher] Gemini unavailable: ${formatErrorDetail(geminiError)}. Failing over to local Ollama (${process.env.OLLAMA_PRIMARY_MODEL || 'llama3.2:3b'})...`
     );
   }
 
@@ -130,7 +131,7 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
     };
   } catch (qwenError) {
     console.warn(
-      `[Aurexo LLM Dispatcher] Ollama ${process.env.OLLAMA_PRIMARY_MODEL || 'qwen3.5:4b'} failed: ${formatErrorDetail(qwenError)}. Trying secondary Ollama (${process.env.OLLAMA_FALLBACK_MODEL || 'llama3.2:1b'})...`
+      `[ORCA LLM Dispatcher] Ollama ${process.env.OLLAMA_PRIMARY_MODEL || 'qwen3.5:4b'} failed: ${formatErrorDetail(qwenError)}. Trying secondary Ollama (${process.env.OLLAMA_FALLBACK_MODEL || 'llama3.2:1b'})...`
     );
   }
 
@@ -160,7 +161,7 @@ Explain this verified data clearly to the user, highlighting safety conditions, 
     };
   } catch (llamaError) {
     console.warn(
-      `[Aurexo LLM Dispatcher] Ollama ${process.env.OLLAMA_FALLBACK_MODEL || 'llama3.2:1b'} failed: ${formatErrorDetail(llamaError)}. Cascading to deterministic rule synthesizer...`
+      `[ORCA LLM Dispatcher] Ollama ${process.env.OLLAMA_FALLBACK_MODEL || 'llama3.2:1b'} failed: ${formatErrorDetail(llamaError)}. Cascading to deterministic rule synthesizer...`
     );
   }
 

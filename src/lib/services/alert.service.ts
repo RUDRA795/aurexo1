@@ -32,7 +32,7 @@ export class AlertService {
         validUntil: new Date(now.getTime() + 24 * 3600 * 1000).toISOString(),
         recommendedAction: 'Suspend nearshore artisanal fishing and small-craft navigation.',
         provenance: {
-          provider: 'Aurexo Oceanographic Threat Engine (Open-Meteo live feed)',
+          provider: 'ORCA Oceanographic Threat Engine (Open-Meteo live feed)',
           endpoint: 'https://marine-api.open-meteo.com',
           retrievalTimestamp: now.toISOString(),
           observationTimestamp: obs.provenance.observationTimestamp,
@@ -54,7 +54,7 @@ export class AlertService {
         validUntil: new Date(now.getTime() + 18 * 3600 * 1000).toISOString(),
         recommendedAction: 'Vessels at sea advised to hoist storm warning flags and navigate towards sheltered embayments.',
         provenance: {
-          provider: 'Aurexo Atmospheric Threat Engine (Open-Meteo live feed)',
+          provider: 'ORCA Atmospheric Threat Engine (Open-Meteo live feed)',
           endpoint: 'https://api.open-meteo.com',
           retrievalTimestamp: now.toISOString(),
           observationTimestamp: obs.provenance.observationTimestamp,
@@ -71,7 +71,7 @@ export class AlertService {
 }
 
 // Singleton instance
-const GLOBAL_ALERT_SERVICE_KEY = '__aurexo_alert_service__';
+const GLOBAL_ALERT_SERVICE_KEY = '__orca_alert_service__';
 export function getAlertService(): AlertService {
   const g = globalThis as unknown as Record<string, AlertService | undefined>;
   if (!g[GLOBAL_ALERT_SERVICE_KEY]) {

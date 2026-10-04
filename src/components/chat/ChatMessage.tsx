@@ -1,9 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Bot, User, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, Cpu, Database, Sparkles, Activity } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  Bot,
+  User,
+  CheckCircle2,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Cpu,
+  Database,
+  Sparkles,
+  Activity,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
 import { AgentResponse, IntegrationStatus } from '@/lib/types/domain';
 import { AgentSwarmTrace } from '@/lib/types/agents';
+import { detectIndicLanguage, speakText } from '@/lib/utils/indic-voice';
 
 interface ChatMessageProps {
   message: {
@@ -44,7 +58,36 @@ function StatusBadge({ status }: { status: IntegrationStatus }) {
 export function ChatMessage({ message, onSelectPrompt, onInspectSwarm }: ChatMessageProps) {
   const isUser = message.role === 'user';
   const [showEvidence, setShowEvidence] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const agent = message.agentData;
+
+  const detectedLanguage = detectIndicLanguage(message.content);
+
+  useEffect(() => {
+    return () => {
+      if (isSpeaking && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [isSpeaking]);
+
+  const handleToggleSpeak = () => {
+    if (isSpeaking) {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setIsSpeaking(false);
+      return;
+    }
+
+    speakText(
+      message.content,
+      detectedLanguage.code,
+      () => setIsSpeaking(true),
+      () => setIsSpeaking(false),
+      () => setIsSpeaking(false)
+    );
+  };
 
   return (
     <div className={`flex flex-col gap-1.5 ${isUser ? 'items-end' : 'items-start'}`}>
@@ -72,19 +115,46 @@ export function ChatMessage({ message, onSelectPrompt, onInspectSwarm }: ChatMes
             {message.content}
           </div>
 
-          {/* Action Row for Agent Responses */}
-          {agent && (
+          {/* Assistant Footer: Read Aloud + Swarm Trace + Evidence */}
+          {!isUser && (
             <div className="pt-2 border-t border-slate-200/60 mt-2 flex flex-wrap items-center justify-between gap-1.5">
-              <button
-                onClick={() => setShowEvidence((prev) => !prev)}
-                className="flex items-center gap-1 text-[11px] font-semibold text-marine-700 hover:text-marine-800 transition-colors"
-              >
-                <Database className="h-3 w-3" />
-                <span>Evidence ({agent.evidence.sources.length} sources)</span>
-                {showEvidence ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              </button>
+              <div className="flex items-center gap-1.5">
+                {/* Indic Text-to-Speech Playback */}
+                <button
+                  onClick={handleToggleSpeak}
+                  className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold border transition-all ${
+                    isSpeaking
+                      ? 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'
+                      : 'bg-white hover:bg-slate-100 text-slate-600 border-slate-200'
+                  }`}
+                  title={isSpeaking ? 'Stop voice read-out' : `Listen in ${detectedLanguage.nativeName} (${detectedLanguage.name})`}
+                >
+                  {isSpeaking ? (
+                    <>
+                      <VolumeX className="h-3 w-3 text-amber-600" />
+                      <span>Stop Voice</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="h-3 w-3 text-marine-600" />
+                      <span>Read Aloud ({detectedLanguage.nativeName})</span>
+                    </>
+                  )}
+                </button>
 
-              {agent.swarmTrace && onInspectSwarm && (
+                {agent && (
+                  <button
+                    onClick={() => setShowEvidence((prev) => !prev)}
+                    className="flex items-center gap-1 text-[11px] font-semibold text-marine-700 hover:text-marine-800 transition-colors ml-1"
+                  >
+                    <Database className="h-3 w-3" />
+                    <span>Evidence ({agent.evidence.sources.length})</span>
+                    {showEvidence ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </button>
+                )}
+              </div>
+
+              {agent?.swarmTrace && onInspectSwarm && (
                 <button
                   onClick={() => onInspectSwarm(agent.swarmTrace!)}
                   className="inline-flex items-center gap-1 rounded-lg bg-marine-50 hover:bg-marine-100 px-2 py-0.5 text-[10px] font-semibold text-marine-700 border border-marine-200 transition-all hover:scale-102"
@@ -96,7 +166,7 @@ export function ChatMessage({ message, onSelectPrompt, onInspectSwarm }: ChatMes
               )}
 
               {/* Collapsible Evidence Payload */}
-              {showEvidence && (
+              {showEvidence && agent && (
                 <div className="w-full mt-2 space-y-2 rounded-xl bg-slate-50/90 p-2.5 border border-slate-200 text-[11px] text-slate-600">
                   <div className="font-semibold text-slate-700 flex items-center justify-between">
                     <span>Authoritative Data Sources</span>
@@ -155,7 +225,9 @@ export function ChatMessage({ message, onSelectPrompt, onInspectSwarm }: ChatMes
         </div>
       )}
 
-      <span suppressHydrationWarning className="text-[9px] text-slate-400 px-1 font-mono">{message.timestamp}</span>
+      <span suppressHydrationWarning className="text-[9px] text-slate-400 px-1 font-mono">
+        {message.timestamp}
+      </span>
     </div>
   );
 }

@@ -20,22 +20,30 @@ export function generateRuleBasedResponse(
   if (data.conditions) {
     const c = data.conditions;
     parts.push(
-      `**Verified Marine Observation for ${c.locationName}** (Retrieved: ${c.observationTime}):`
+      `**Verified Marine Observation for ${c.locationName ?? 'Indian Maritime Domain'}** (Retrieved: ${c.observationTime ?? new Date().toISOString()}):`
     );
+    if (c.wave) {
+      parts.push(
+        `• **Sea State**: Wave height is ${c.wave.heightMeters !== undefined ? c.wave.heightMeters.toFixed(1) : '0.0'}m (${c.wave.category ?? 'Normal'}) with a swell period of ${c.wave.periodSeconds !== undefined ? c.wave.periodSeconds.toFixed(1) : '0.0'}s.`
+      );
+    }
+    if (c.wind) {
+      parts.push(
+        `• **Wind**: ${c.wind.speedKmh !== undefined ? c.wind.speedKmh.toFixed(1) : '0.0'} km/h (${c.wind.beaufortDescription ?? 'Gentle'}, Beaufort force ${c.wind.beaufortScale ?? 2}) gusting to ${c.wind.gustsKmh !== undefined ? c.wind.gustsKmh.toFixed(1) : '0.0'} km/h.`
+      );
+    }
+    if (c.seaSurfaceTemperatureCelsius !== undefined) {
+      parts.push(
+        `• **Sea Surface Temperature (SST)**: ${c.seaSurfaceTemperatureCelsius.toFixed(1)}°C.`
+      );
+    }
+    if (c.currents) {
+      parts.push(
+        `• **Ocean Currents**: Velocity of ${c.currents.velocityKmh !== undefined ? c.currents.velocityKmh.toFixed(1) : '0.0'} km/h at heading ${c.currents.directionDegrees ?? 0}°.`
+      );
+    }
     parts.push(
-      `• **Sea State**: Wave height is ${c.wave.heightMeters.toFixed(1)}m (${c.wave.category}) with a swell period of ${c.wave.periodSeconds.toFixed(1)}s.`
-    );
-    parts.push(
-      `• **Wind**: ${c.wind.speedKmh.toFixed(1)} km/h (${c.wind.beaufortDescription}, Beaufort force ${c.wind.beaufortScale}) gusting to ${c.wind.gustsKmh.toFixed(1)} km/h.`
-    );
-    parts.push(
-      `• **Sea Surface Temperature (SST)**: ${c.seaSurfaceTemperatureCelsius.toFixed(1)}°C.`
-    );
-    parts.push(
-      `• **Ocean Currents**: Velocity of ${c.currents.velocityKmh.toFixed(1)} km/h at heading ${c.currents.directionDegrees}°.`
-    );
-    parts.push(
-      `• **Safety Assessment**: ${c.isSafeForSmallCraft ? 'SAFE for small fishing vessels.' : 'CAUTION: Hazardous conditions for small craft.'} ${c.advisoryText}`
+      `• **Safety Assessment**: ${c.isSafeForSmallCraft ? 'SAFE for small fishing vessels.' : 'CAUTION: Hazardous conditions for small craft.'} ${c.advisoryText ?? 'Maintain continuous monitoring.'}`
     );
   }
 
@@ -70,7 +78,7 @@ export function generateRuleBasedResponse(
   }
 
   if (parts.length === 0) {
-    return `Aurexo has received your inquiry regarding marine conditions. Please provide specific coordinates or select a coastal location to retrieve verified oceanographic observations and boundary compliance assessments.`;
+    return `ORCA has received your inquiry regarding marine conditions. Please provide specific coordinates or select a coastal location to retrieve verified oceanographic observations and boundary compliance assessments.`;
   }
 
   return parts.join('\n');

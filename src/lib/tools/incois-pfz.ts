@@ -3,7 +3,7 @@ import { PFZAdvisoryResult } from '../types/domain';
 /**
  * Adapter for INCOIS Potential Fishing Zones (PFZ).
  * Status: DOCUMENTED_UNVERIFIED.
- * In accordance with Aurexo data principles, if the official INCOIS live API feed
+ * In accordance with ORCA data principles, if the official INCOIS live API feed
  * is unverified today, we return structured reference sector guidelines and clearly
  * flag the source as DOCUMENTED_UNVERIFIED so users know it is not live sensor telemetry.
  */

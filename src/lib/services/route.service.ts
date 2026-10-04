@@ -118,7 +118,7 @@ export class RouteService {
 }
 
 // Singleton instance
-const GLOBAL_ROUTE_SERVICE_KEY = '__aurexo_route_service__';
+const GLOBAL_ROUTE_SERVICE_KEY = '__orca_route_service__';
 export function getRouteService(): RouteService {
   const g = globalThis as unknown as Record<string, RouteService | undefined>;
   if (!g[GLOBAL_ROUTE_SERVICE_KEY]) {

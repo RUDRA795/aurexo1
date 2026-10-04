@@ -33,7 +33,7 @@ export class PFZService {
 }
 
 // Singleton instance
-const GLOBAL_PFZ_SERVICE_KEY = '__aurexo_pfz_service__';
+const GLOBAL_PFZ_SERVICE_KEY = '__orca_pfz_service__';
 export function getPfzService(): PFZService {
   const g = globalThis as unknown as Record<string, PFZService | undefined>;
   if (!g[GLOBAL_PFZ_SERVICE_KEY]) {

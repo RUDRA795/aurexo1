@@ -225,7 +225,7 @@ export class PointIntelligenceService {
 }
 
 // Singleton instance
-const GLOBAL_POINT_SERVICE_KEY = '__aurexo_point_intelligence_service__';
+const GLOBAL_POINT_SERVICE_KEY = '__orca_point_intelligence_service__';
 export function getPointIntelligenceService(): PointIntelligenceService {
   const g = globalThis as unknown as Record<string, PointIntelligenceService | undefined>;
   if (!g[GLOBAL_POINT_SERVICE_KEY]) {

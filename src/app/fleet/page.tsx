@@ -80,7 +80,7 @@ function VesselCard({ vessel }: { vessel: MarineVessel }) {
         <span className="text-[10px] font-mono font-semibold text-emerald-300">{vessel.sourceStatus}</span>
       </div>
 
-      {/* Ask Aurexo link */}
+      {/* Ask ORCA link */}
       <Link
         href={`/dashboard?q=Where is ${vessel.name}?`}
         className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/15 px-3 py-1.5 rounded-xl transition-all shadow-sm"
@@ -199,7 +199,7 @@ export default function FleetPage() {
             </div>
             <h1 className="mb-2 font-mono text-3xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">Indian Maritime Fleet</h1>
             <p className="text-sm text-slate-200 drop-shadow">
-              Registered vessels in the Aurexo AIS registry — position, speed, heading and destination.
+              Registered vessels in the ORCA AIS registry — position, speed, heading and destination.
             </p>
           </div>
           <div className="flex items-center gap-3">

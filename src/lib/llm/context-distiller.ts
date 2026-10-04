@@ -1,5 +1,5 @@
 /**
- * Aurexo Context Distillation Engine
+ * ORCA Context Distillation Engine
  * Compresses raw multi-thousand-token tool telemetry into high-signal,
  * factual domain summaries for local LLM prompt evaluation.
  * Prevents GPU/CPU PCIe memory bus thrashing on 4GB VRAM hardware.

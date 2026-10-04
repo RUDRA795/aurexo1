@@ -11,6 +11,7 @@ import { Legend } from './Legend';
 
 interface MarineMapProps {
   onCoordinateClick?: (coord: GeoCoordinate) => void;
+  onAskOrca?: (coord: GeoCoordinate, initialQuery?: string) => void;
   onAskAurexo?: (coord: GeoCoordinate, initialQuery?: string) => void;
   selectedCoordinate?: GeoCoordinate | null;
   mapCenter?: [number, number]; // [lng, lat]
@@ -23,6 +24,7 @@ interface MarineMapProps {
 
 export function MarineMap({
   onCoordinateClick,
+  onAskOrca,
   onAskAurexo,
   selectedCoordinate,
 
@@ -38,11 +40,12 @@ export function MarineMap({
   const markerRef = useRef<maplibregl.Marker | null>(null);
   const agentMarkerRef = useRef<maplibregl.Marker | null>(null);
   const pointPopupRef = useRef<maplibregl.Popup | null>(null);
-  const onAskAurexoRef = useRef(onAskAurexo);
+  const onAskOrcaHandler = onAskOrca || onAskAurexo;
+  const onAskOrcaRef = useRef(onAskOrcaHandler);
 
   useEffect(() => {
-    onAskAurexoRef.current = onAskAurexo;
-  }, [onAskAurexo]);
+    onAskOrcaRef.current = onAskOrcaHandler;
+  }, [onAskOrcaHandler]);
 
 
   const [activeLayer, setActiveLayer] = useState<SatelliteLayerId>('none');
@@ -323,7 +326,7 @@ export function MarineMap({
         const coords = geom.coordinates.slice() as [number, number];
         const p = feature.properties || {};
 
-        new Popup({ offset: 12, closeButton: true, className: 'aurexo-vessel-popup' })
+        new Popup({ offset: 12, closeButton: true, className: 'orca-vessel-popup' })
           .setLngLat(coords)
           .setHTML(`
             <div style="font-family: inherit; font-size: 11px; color: #1e293b; padding: 4px; line-height: 1.4;">
@@ -375,7 +378,7 @@ export function MarineMap({
         offset: 14,
         closeButton: true,
         closeOnClick: false,
-        className: 'aurexo-intel-popup',
+        className: 'orca-intel-popup',
       }).setLngLat([coord.longitude, coord.latitude]);
 
       // 1. Initial loading container
@@ -481,16 +484,16 @@ export function MarineMap({
               <span>Open-Meteo • AIS</span>
             </div>
 
-            <button id="btn-ask-aurexo-point" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3); transition: all 0.2s;">
-              ⚡ ASK AUREXO ABOUT THIS LOCATION
+            <button id="btn-ask-orca-point" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3); transition: all 0.2s;">
+              ⚡ ASK ORCA ABOUT THIS LOCATION
             </button>
           `;
 
-          const btn = content.querySelector('#btn-ask-aurexo-point');
+          const btn = content.querySelector('#btn-ask-orca-point');
           if (btn) {
             btn.addEventListener('click', () => {
-              if (onAskAurexoRef.current) {
-                onAskAurexoRef.current(
+              if (onAskOrcaRef.current) {
+                onAskOrcaRef.current(
                   coord,
                   `Analyze the current marine conditions, weather, nearby vessels, and navigational safety at this selected coordinate: ${coord.latitude}°N, ${coord.longitude}°E (${data.location.regionName}).`
                 );
@@ -508,15 +511,15 @@ export function MarineMap({
             <div style="font-weight: 700; margin-bottom: 4px;">Point Telemetry Notice</div>
             <div style="font-size: 10px; color: #475569;">Selected point: ${coord.latitude.toFixed(4)}°N, ${coord.longitude.toFixed(4)}°E</div>
             <div style="margin-top: 4px; font-size: 9px; color: #ef4444;">Live telemetry temporarily unavailable: ${err.message}</div>
-            <button id="btn-ask-aurexo-point-err" style="margin-top: 8px; width: 100%; background: #0284c7; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-              ⚡ Ask Aurexo Copilot
+            <button id="btn-ask-orca-point-err" style="margin-top: 8px; width: 100%; background: #0284c7; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
+              ⚡ Ask ORCA Copilot
             </button>
           `;
-          const errBtn = errDiv.querySelector('#btn-ask-aurexo-point-err');
+          const errBtn = errDiv.querySelector('#btn-ask-orca-point-err');
           if (errBtn) {
             errBtn.addEventListener('click', () => {
-              if (onAskAurexoRef.current) {
-                onAskAurexoRef.current(coord, `What is the situation at coordinate ${coord.latitude}°N, ${coord.longitude}°E?`);
+              if (onAskOrcaRef.current) {
+                onAskOrcaRef.current(coord, `What is the situation at coordinate ${coord.latitude}°N, ${coord.longitude}°E?`);
               }
             });
           }

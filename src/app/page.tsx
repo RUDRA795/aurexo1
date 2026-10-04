@@ -164,14 +164,14 @@ export default function HomePage() {
 
           {/* Headline */}
           <h1 className="mb-4 font-mono text-5xl font-black leading-tight tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.7)] md:text-7xl">
-            AUREXO
+            ORCA
           </h1>
           <p className="mb-3 font-mono text-xl font-semibold text-slate-100 drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] md:text-2xl">
-            India&apos;s Autonomous Marine Intelligence Platform
+            Marine EcOsystem Reasoning with Collaborative Agents
           </p>
           <p className="mb-10 max-w-2xl text-base leading-relaxed text-slate-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] md:text-lg">
             AI-powered maritime situational awareness — real-time ocean data, satellite intelligence,
-            vessel tracking, and conversational AI for India&apos;s 7,500 km coastline.
+            vessel tracking, and collaborative reasoning for India&apos;s 7,500 km coastline.
           </p>
 
           {/* CTA buttons */}
@@ -181,7 +181,7 @@ export default function HomePage() {
               className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-slate-950 shadow-xl transition-all hover:bg-slate-100 hover:shadow-2xl hover:scale-105 active:scale-95"
             >
               <MessageSquare className="h-5 w-5 text-slate-900" />
-              Ask Aurexo
+              Ask ORCA
               <ChevronRight className="h-4 w-4" />
             </Link>
             <Link
@@ -333,7 +333,7 @@ export default function HomePage() {
               <h3 className="font-mono text-lg font-bold text-white">SIH 2026 — Problem Statement PS-176</h3>
             </div>
             <p className="mb-6 text-sm leading-relaxed text-slate-200">
-              Aurexo directly addresses the Smart India Hackathon 2026 PS-176 requirement for an
+              ORCA directly addresses the Smart India Hackathon 2026 PS-176 requirement for an
               AI-powered maritime intelligence platform covering India&apos;s exclusive economic zone,
               fisherman safety, vessel compliance and blue economy sustainability.
             </p>
@@ -366,8 +366,10 @@ export default function HomePage() {
       <footer className="border-t border-slate-800/60 px-4 py-8 text-center">
         <div className="mx-auto max-w-screen-xl flex flex-col items-center gap-3">
           <div className="flex items-center gap-2">
-            <Anchor className="h-4 w-4 text-cyan-500" />
-            <span className="font-mono text-sm font-semibold text-slate-300">AUREXO</span>
+            <div className="h-5 w-5 overflow-hidden rounded-full border border-cyan-400/40">
+              <img src="/images/orca-logo-circle.png" alt="ORCA" className="h-full w-full object-cover" />
+            </div>
+            <span className="font-mono text-sm font-semibold text-slate-300">ORCA</span>
           </div>
           <p className="text-xs text-slate-600">
             Marine data: Open-Meteo (live) · Satellite: NASA GIBS · Boundaries: EEZ/IMBL GeoJSON ·

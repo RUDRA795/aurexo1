@@ -1,5 +1,5 @@
 /**
- * Canonical typed provider error taxonomy for Aurexo.
+ * Canonical typed provider error taxonomy for ORCA.
  * Ensures external failures degrade honestly and predictably.
  */
 

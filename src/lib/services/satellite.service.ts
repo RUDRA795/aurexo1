@@ -82,7 +82,7 @@ export class SatelliteService {
 }
 
 // Singleton instance
-const GLOBAL_SATELLITE_SERVICE_KEY = '__aurexo_satellite_service__';
+const GLOBAL_SATELLITE_SERVICE_KEY = '__orca_satellite_service__';
 export function getSatelliteService(): SatelliteService {
   const g = globalThis as unknown as Record<string, SatelliteService | undefined>;
   if (!g[GLOBAL_SATELLITE_SERVICE_KEY]) {

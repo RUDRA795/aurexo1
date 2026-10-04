@@ -1,5 +1,5 @@
 /**
- * Aurexo Real-Time AIS Ingestion Service
+ * ORCA Real-Time AIS Ingestion Service
  * Connects server-side to AISStream WebSocket API.
  * Subscribes to the Indian Maritime EEZ bounding box.
  * Normalizes live PositionReport and ShipStaticData messages into MarineVessel domain objects.
@@ -117,7 +117,7 @@ class AisStreamManager {
         try {
           ws.send(JSON.stringify(subMsg));
         } catch (e) {
-          console.error('[Aurexo AIS] Failed to send subscription:', e);
+          console.error('[ORCA AIS] Failed to send subscription:', e);
         }
       };
 
@@ -273,7 +273,7 @@ class AisStreamManager {
 }
 
 // Attach singleton to globalThis to survive Next.js module re-evaluations
-const GLOBAL_AIS_KEY = '__aurexo_ais_singleton__';
+const GLOBAL_AIS_KEY = '__orca_ais_singleton__';
 
 export function getAisManager(): AisStreamManager {
   const g = globalThis as unknown as Record<string, AisStreamManager | undefined>;

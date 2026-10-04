@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 import { MarineHUD } from '@/components/telemetry/MarineHUD';
 import { ChatDrawer } from '@/components/chat/ChatDrawer';
 import { AgentInspector } from '@/components/chat/AgentInspector';
+import { VoyageManifestModal } from '@/components/voyage/VoyageManifestModal';
+import { EvaluatorToolbar, EvaluatorScenario } from '@/components/evaluator/EvaluatorToolbar';
 import {
   GeoCoordinate,
   MarineObservation,
@@ -50,6 +52,7 @@ export default function DashboardPage() {
   // Multi-Agent Swarm Telemetry Inspector
   const [swarmTrace, setSwarmTrace] = useState<AgentSwarmTrace | null>(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState<boolean>(false);
+  const [isManifestOpen, setIsManifestOpen] = useState<boolean>(false);
   const [externalPromptTrigger, setExternalPromptTrigger] = useState<{ prompt: string; timestamp: number } | null>(null);
 
   // Fetch verified marine conditions whenever the selected coordinate changes
@@ -83,8 +86,8 @@ export default function DashboardPage() {
     [loadConditions]
   );
 
-  // Handle "Ask Aurexo" from Point Intelligence popup
-  const handleAskAurexo = useCallback(
+  // Handle "Ask ORCA" from Point Intelligence popup
+  const handleAskOrca = useCallback(
     (coord: GeoCoordinate, initialQuery?: string) => {
       setSelectedCoordinate(coord);
       setMapCenter([coord.longitude, coord.latitude]);
@@ -126,6 +129,18 @@ export default function DashboardPage() {
     setIsInspectorOpen(true);
   }, []);
 
+  const handleRunScenario = useCallback((scenario: EvaluatorScenario) => {
+    if (scenario.coord) {
+      setSelectedCoordinate(scenario.coord);
+      setMapCenter([scenario.coord.longitude, scenario.coord.latitude]);
+      loadConditions(scenario.coord);
+    }
+    setExternalPromptTrigger({
+      prompt: scenario.prompt,
+      timestamp: Date.now(),
+    });
+  }, [loadConditions]);
+
   return (
     // Full-screen map canvas — isolate overflow here, not at root body
     <div className="relative h-screen w-screen overflow-hidden bg-slate-950 font-sans" style={{ paddingTop: 0 }}>
@@ -134,7 +149,7 @@ export default function DashboardPage() {
       <MarineMap
         selectedCoordinate={selectedCoordinate}
         onCoordinateClick={handleCoordinateClick}
-        onAskAurexo={handleAskAurexo}
+        onAskOrca={handleAskOrca}
         mapCenter={mapCenter}
         mapZoom={mapZoom}
         activeLayerOverride={activeLayerOverride}
@@ -154,6 +169,7 @@ export default function DashboardPage() {
             onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
             isInspectorOpen={isInspectorOpen}
             swarmStepsCount={swarmTrace?.steps.length}
+            onOpenManifest={() => setIsManifestOpen(true)}
           />
         </div>
       </div>
@@ -168,12 +184,24 @@ export default function DashboardPage() {
         />
       </div>
 
+      {/* 4. Bottom Evaluator Benchmark Toolbar */}
+      <EvaluatorToolbar
+        onRunScenario={handleRunScenario}
+        onOpenManifest={() => setIsManifestOpen(true)}
+      />
 
-      {/* 4. Right Floating Multi-Agent Swarm Telemetry Inspector */}
+      {/* 5. Right Floating Multi-Agent Swarm Telemetry Inspector */}
       <AgentInspector
         isOpen={isInspectorOpen}
         onClose={() => setIsInspectorOpen(false)}
         trace={swarmTrace}
+      />
+
+      {/* 6. Voyage Clearance Manifest Modal */}
+      <VoyageManifestModal
+        isOpen={isManifestOpen}
+        onClose={() => setIsManifestOpen(false)}
+        defaultCoord={selectedCoordinate}
       />
     </div>
   );

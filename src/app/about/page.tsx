@@ -20,7 +20,7 @@ const PS_REQUIREMENTS = [
   { req: 'Satellite oceanography (SST + Chlorophyll tiles)', status: 'live', coverage: 85, note: 'NASA GIBS WMS overlays — AQUA MODIS + VIIRS SNPP' },
   { req: 'EEZ & IMBL boundary geofencing', status: 'live', coverage: 80, note: 'Turf.js deterministic math over india_eez_imbl.geojson' },
   { req: 'Marine Protected Area compliance', status: 'live', coverage: 80, note: 'Point-in-polygon via Turf.js + marine_protected_areas.geojson' },
-  { req: 'Conversational AI — Ask Aurexo', status: 'live', coverage: 85, note: 'Multi-agent swarm, multi-turn memory, sessionContext' },
+  { req: 'Conversational AI — Ask ORCA', status: 'live', coverage: 85, note: 'Multi-agent swarm, multi-turn memory, sessionContext' },
   { req: 'Geospatial map intelligence', status: 'live', coverage: 80, note: 'MapLibre GL — satellite layers, fleet layer, agent markers' },
   { req: 'Regional marine warning scanning', status: 'live', coverage: 70, note: '9 Indian sectors scanned against Open-Meteo live conditions' },
   { req: 'Safety & hazard engine', status: 'partial', coverage: 55, note: 'Open-Meteo derived; IMD/NAVTEX integration pending' },
@@ -93,9 +93,9 @@ export default function AboutPage() {
             <Info className="h-3.5 w-3.5 text-slate-200" />
             SIH 2026 — PROBLEM STATEMENT PS-176
           </div>
-          <h1 className="mb-3 font-mono text-3xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">About Aurexo</h1>
+          <h1 className="mb-3 font-mono text-3xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">About ORCA</h1>
           <p className="max-w-3xl text-slate-200 leading-relaxed drop-shadow">
-            Aurexo is built for <strong className="text-white">Smart India Hackathon 2026, Problem Statement PS-176</strong> —
+            ORCA is built for <strong className="text-white">Smart India Hackathon 2026, Problem Statement PS-176</strong> —
             an AI-powered maritime intelligence platform for India&apos;s 7,500 km coastline, covering fisherman safety,
             vessel boundary compliance, marine resource sustainability and blue economy analytics.
           </p>

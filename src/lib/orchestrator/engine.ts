@@ -193,7 +193,7 @@ export async function processAgentQuery(
       mapCenter = [(originCoord.longitude + destCoord.longitude) / 2, (originCoord.latitude + destCoord.latitude) / 2];
       mapZoom = route.totalDistanceKm > 300 ? 6 : 7;
       evidenceSources.push({
-        name: 'Aurexo Great-Circle Navigational Corridor Engine',
+        name: 'ORCA Great-Circle Navigational Corridor Engine',
         status: 'VERIFIED_LIVE',
         retrievedAt: new Date().toISOString(),
       });
@@ -213,7 +213,7 @@ export async function processAgentQuery(
       });
       toolData.hazards = hazards;
       evidenceSources.push({
-        name: 'Aurexo Threat Engine & IMD Marine Bulletins',
+        name: 'ORCA Threat Engine & IMD Marine Bulletins',
         status: 'DOCUMENTED_UNVERIFIED',
         retrievedAt: new Date().toISOString(),
       });

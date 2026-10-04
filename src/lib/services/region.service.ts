@@ -81,7 +81,7 @@ export class RegionService {
 }
 
 // Singleton instance
-const GLOBAL_REGION_SERVICE_KEY = '__aurexo_region_service__';
+const GLOBAL_REGION_SERVICE_KEY = '__orca_region_service__';
 export function getRegionService(): RegionService {
   const g = globalThis as unknown as Record<string, RegionService | undefined>;
   if (!g[GLOBAL_REGION_SERVICE_KEY]) {

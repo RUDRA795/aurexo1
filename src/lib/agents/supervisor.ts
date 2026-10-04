@@ -259,7 +259,7 @@ export async function runSupervisorAgent({
     swarmSteps.push(...vesselRes.steps);
 
     evidenceSources.push({
-      name: 'Aurexo AIS Vessel Fleet Registry',
+      name: 'ORCA AIS Vessel Fleet Registry',
       status: 'VERIFIED_LIVE',
       retrievedAt: new Date().toISOString(),
     });
@@ -321,7 +321,7 @@ export async function runSupervisorAgent({
     highlightGeometry = route.routeGeometry;
 
     evidenceSources.push({
-      name: 'Aurexo Great-Circle Navigational Corridor Engine',
+      name: 'ORCA Great-Circle Navigational Corridor Engine',
       status: 'VERIFIED_LIVE',
       retrievedAt: new Date().toISOString(),
     });

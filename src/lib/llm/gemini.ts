@@ -20,7 +20,7 @@ export async function generateWithGemini(
     throw new Error('Gemini API key not found in server environment');
   }
 
-  const model = options.model || process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const model = options.model || process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
   const timeoutMs = options.timeoutMs || parseInt(process.env.GEMINI_TIMEOUT_MS || '12000', 10);
 
   const startTime = Date.now();
