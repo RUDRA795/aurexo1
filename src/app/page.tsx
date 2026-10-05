@@ -485,7 +485,7 @@ export default function HomePage() {
             </h2>
             <p className="mx-auto max-w-2xl text-slate-300 leading-relaxed">
               Autonomous multi-agent ocean observation engine — verified live telemetry,
-              Zod-validated schemas, and deterministic geospatial math across India's coastline.
+              Zod-validated schemas, and deterministic geospatial math across India&apos;s coastline.
             </p>
           </div>
 

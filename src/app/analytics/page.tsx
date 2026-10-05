@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
   BarChart3,
@@ -109,10 +109,10 @@ export default function AnalyticsPage() {
   const [loadingConditions, setLoadingConditions] = useState(true);
   const [radarData, setRadarData] = useState<{ region: string; wave: number; wind: number; sst: number }[]>([]);
 
-  const fetchConditions = async () => {
+  const fetchConditions = useCallback(async () => {
     setLoadingConditions(true);
     const results: Record<string, LiveConditions> = {};
-    const radar: typeof radarData = [];
+    const radar: { region: string; wave: number; wind: number; sst: number }[] = [];
 
     await Promise.allSettled(
       RADAR_REGIONS.map(async ({ region, lat, lon }) => {
@@ -135,9 +135,11 @@ export default function AnalyticsPage() {
     setLiveConditions(results);
     setRadarData(radar);
     setLoadingConditions(false);
-  };
+  }, []);
 
-  useEffect(() => { fetchConditions(); }, []);
+  useEffect(() => {
+    fetchConditions();
+  }, [fetchConditions]);
 
   const qualityColor = (q: number) => {
     if (q >= 85) return '#10b981';
