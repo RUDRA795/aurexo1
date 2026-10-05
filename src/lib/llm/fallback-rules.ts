@@ -15,6 +15,22 @@ export interface RuleBasedData {
     nearestPorts: Array<{ name: string; distanceKm: number; sector: string }>;
     context: string;
   };
+  internationalData?: {
+    name: string;
+    maritimeZone: string;
+    keyShippingCorridors: string;
+    indianGatewayPorts: string[];
+    platformScope: string;
+  };
+  routeWeather?: {
+    corridorName: string;
+    originName: string;
+    destName: string;
+    originObservation?: MarineObservation;
+    midObservation?: MarineObservation;
+    destinationObservation?: MarineObservation;
+    routeSafety?: string;
+  };
   conversational?: {
     isGreeting?: boolean;
     capabilities?: string[];
@@ -51,6 +67,22 @@ export function generateRuleBasedResponse(
       `AUREXO / ORCA is dedicated to monitoring India's **7,516 km coastline**, Exclusive Economic Zone (EEZ), and surrounding waters (Arabian Sea, Bay of Bengal, and Indian Ocean).\n\n` +
       `**Major Maritime Trade Gateways for this region:**\n${portBullets}\n\n` +
       `You can click on any coastal point or port (such as Kandla, Mumbai JNPT, Cochin, or Chennai) to inspect live wave heights, wind, SST, and boundary geofences.`
+    );
+  }
+
+  // 1b. International Sovereign Territory / Overseas Inquiries
+  if (data.internationalData) {
+    const intl = data.internationalData;
+    const gatewayBullets = intl.indianGatewayPorts
+      .map((p) => `• **${p}**`)
+      .join('\n');
+
+    return (
+      `**${intl.name}** is an international sovereign territory situated along the ${intl.maritimeZone}.\n\n` +
+      `**Strategic Shipping Corridors & Sea Lanes:**\n${intl.keyShippingCorridors}\n\n` +
+      `**Connected Indian Gateway Ports & Transshipment Hubs:**\n${gatewayBullets}\n\n` +
+      `*Operational Scope:* ${intl.platformScope}\n\n` +
+      `You can plan a maritime route corridor (e.g., *"route from Chennai to Port Blair"* or *"from Rameswaram to Sri Lanka"*) or inspect live sea conditions across any Indian maritime sector.`
     );
   }
 
@@ -211,6 +243,26 @@ export function generateRuleBasedResponse(
     parts.push(`• Total Distance: **${r.totalDistanceKm} km** (~${r.estimatedTravelTimeHours} hours at 12 knots).`);
     parts.push(`• Corridor Risk: **${r.overallSafety}**.`);
     parts.push(`• Route Advisory: ${r.advisory}`);
+  }
+
+  if (data.routeWeather) {
+    const rw = data.routeWeather;
+    parts.push(`\n**Voyage Passage Weather & Sea State (${rw.corridorName})**:`);
+    if (rw.originObservation) {
+      const o = rw.originObservation;
+      parts.push(`• **Departure (${rw.originName})**: Wave height **${o.wave?.heightMeters?.toFixed(2) ?? '0.50'} m**, Wind **${o.wind?.speedKmh?.toFixed(1) ?? '10.0'} km/h**, SST **${o.seaSurfaceTemperatureCelsius?.toFixed(1) ?? '29.5'}°C**.`);
+    }
+    if (rw.midObservation) {
+      const m = rw.midObservation;
+      parts.push(`• **Mid-Passage Waypoint**: Wave height **${m.wave?.heightMeters?.toFixed(2) ?? '0.60'} m**, Wind **${m.wind?.speedKmh?.toFixed(1) ?? '12.0'} km/h**.`);
+    }
+    if (rw.destinationObservation) {
+      const d = rw.destinationObservation;
+      parts.push(`• **Arrival Sector (${rw.destName})**: Wave height **${d.wave?.heightMeters?.toFixed(2) ?? '0.55'} m**, Wind **${d.wind?.speedKmh?.toFixed(1) ?? '11.0'} km/h**.`);
+    }
+    if (rw.routeSafety) {
+      parts.push(`• **Voyage Advisory**: Corridor status is **${rw.routeSafety}**. Maintain standard radio watch and AIS transponder broadcast.`);
+    }
   }
 
   if (parts.length === 0) {

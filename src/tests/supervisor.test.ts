@@ -114,3 +114,62 @@ test('8. Markdown Sanitizer eliminates LaTeX formatting artifacts', () => {
   const clean = sanitizeMarkdownFormatting(raw);
   assert.equal(clean, 'The SST is 30.2°C and wave height is 0.56 m with wind 8.1 km/h. Distance is 708.3 km.');
 });
+
+test('9. Supervisor handles Nagpur inland query even when userCoordinates is passed', async () => {
+  const res = await runSupervisorAgent({
+    prompt: 'nagpur',
+    userCoordinates: { latitude: 18.95, longitude: 72.80 }, // Default map selection
+  });
+
+  assert.ok(res.answer.length > 0);
+  assert.ok(res.toolsUsed.includes('query_inland_territory_gateway'));
+  assert.ok(res.answer.toLowerCase().includes('nagpur'));
+  assert.ok(res.answer.toLowerCase().includes('inland'));
+  assert.ok(res.answer.includes('Visakhapatnam') || res.answer.includes('Mumbai'));
+});
+
+test('10. Supervisor handles international country query (China) with strategic sea lanes', async () => {
+  const res = await runSupervisorAgent({
+    prompt: 'tell me about china',
+    userCoordinates: { latitude: 18.95, longitude: 72.80 },
+  });
+
+  assert.ok(res.answer.length > 0);
+  assert.ok(res.toolsUsed.includes('query_international_territory_corridor'));
+  assert.ok(res.answer.toLowerCase().includes('china'));
+  assert.ok(res.answer.toLowerCase().includes('malacca') || res.answer.toLowerCase().includes('shipping'));
+});
+
+test('11. Supervisor handles India to Sri Lanka travel route and corridor mapping', async () => {
+  const res = await runSupervisorAgent({
+    prompt: 'i want to travel from the india to sri lanka',
+    userCoordinates: { latitude: 18.95, longitude: 72.80 },
+  });
+
+  assert.ok(res.answer.length > 0);
+  assert.ok(res.toolsUsed.includes('compute_safe_passage'));
+  assert.ok(res.mapActions?.highlightGeometry);
+  assert.ok(res.sessionContext?.lastLocationName?.includes('Sri Lanka') || res.sessionContext?.lastLocationName?.includes('Talaimannar'));
+});
+
+test('12. Supervisor handles follow-up "wheather" query on active route corridor', async () => {
+  const routeTurn = await runSupervisorAgent({
+    prompt: 'i am travrlling from india to sri lanka',
+  });
+
+  assert.ok(routeTurn.sessionContext?.lastLocationName);
+
+  const weatherFollowUp = await runSupervisorAgent({
+    prompt: 'wheather',
+    sessionContext: routeTurn.sessionContext,
+  });
+
+  assert.ok(weatherFollowUp.toolsUsed.includes('query_corridor_voyage_weather'));
+  assert.ok(weatherFollowUp.answer.length > 0);
+  assert.ok(
+    weatherFollowUp.answer.toLowerCase().includes('corridor') ||
+    weatherFollowUp.answer.toLowerCase().includes('passage') ||
+    weatherFollowUp.answer.toLowerCase().includes('departure') ||
+    weatherFollowUp.answer.toLowerCase().includes('wave')
+  );
+});

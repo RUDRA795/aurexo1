@@ -27,13 +27,24 @@ export function distillToolContextForLLM(toolData: Record<string, any>): string 
     lines.push(`• Maritime Platform Scope: AUREXO / ORCA is an oceanographic and maritime boundary intelligence engine for India's 7,516 km coastline, EEZ, and high seas.`);
   }
 
-  // 1c. Conversational Orientation
+  // 1c. International Territory & Strategic Sea Lanes
+  if (toolData.internationalData) {
+    const intl = toolData.internationalData;
+    lines.push(`• International Sovereign Territory / Foreign Partner: ${intl.name} (${intl.maritimeZone})`);
+    lines.push(`• Strategic Maritime Corridors: ${intl.keyShippingCorridors}`);
+    if (Array.isArray(intl.indianGatewayPorts)) {
+      lines.push(`• Primary Indian Connecting Gateway Ports: ${intl.indianGatewayPorts.join(', ')}`);
+    }
+    lines.push(`• Operational Scope Note: ${intl.platformScope}`);
+  }
+
+  // 1d. Conversational Orientation
   if (toolData.conversational) {
     lines.push(`• Platform Identity: AUREXO / ORCA (ISRO-standard maritime intelligence copilot)`);
     lines.push(`• Active Capabilities: Real-time ocean observations (waves, currents, SST), weather alerts, AIS vessel tracking, IMBL/EEZ geofencing, Potential Fishing Zones (PFZ), navigational routing.`);
   }
 
-  // 1d. Oceanographic Concept Knowledge
+  // 1e. Oceanographic Concept Knowledge
   if (toolData.conceptQuery) {
     lines.push(`• Oceanographic Concept Focus: ${toolData.conceptQuery.topic}`);
   }
@@ -141,10 +152,31 @@ export function distillToolContextForLLM(toolData: Record<string, any>): string 
     }
   }
 
-  // 7. Route Passage
+  // 7. Route Passage & Voyage Corridor
   const route = toolData.route;
   if (route) {
     lines.push(`• Navigation Route: ${route.originName} to ${route.destinationName} (${route.totalDistanceKm} km, ~${route.estimatedTravelTimeHours} hrs) - Status: ${route.overallSafety}`);
+    if (route.advisory) {
+      lines.push(`• Corridor Navigational Advisory: ${route.advisory}`);
+    }
+  }
+
+  // 7b. Multi-Point Route Weather
+  if (toolData.routeWeather) {
+    const rw = toolData.routeWeather;
+    lines.push(`• Voyage Passage Weather (${rw.corridorName}):`);
+    if (rw.originObservation) {
+      lines.push(`  - Departure (${rw.originName}): Waves ${rw.originObservation.wave?.heightMeters ?? '?'}m, Wind ${rw.originObservation.wind?.speedKmh ?? '?'} km/h, SST ${rw.originObservation.seaSurfaceTemperatureCelsius ?? '?'}°C`);
+    }
+    if (rw.midObservation) {
+      lines.push(`  - Mid-Corridor Waypoint: Waves ${rw.midObservation.wave?.heightMeters ?? '?'}m, Wind ${rw.midObservation.wind?.speedKmh ?? '?'} km/h`);
+    }
+    if (rw.destinationObservation) {
+      lines.push(`  - Destination (${rw.destName}): Waves ${rw.destinationObservation.wave?.heightMeters ?? '?'}m, Wind ${rw.destinationObservation.wind?.speedKmh ?? '?'} km/h`);
+    }
+    if (rw.routeSafety) {
+      lines.push(`  - Navigational Safety Level: ${rw.routeSafety}`);
+    }
   }
 
   // 8. Regional Warnings Summary

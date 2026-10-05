@@ -1,5 +1,6 @@
 import { generateWithGemini } from './gemini';
 import { generateWithGroq } from './groq';
+import { generateWithOmniRoute } from './omniroute';
 import { generateWithOllama, OllamaError } from './ollama';
 import { generateRuleBasedResponse } from './fallback-rules';
 import { distillToolContextForLLM } from './context-distiller';
@@ -17,7 +18,7 @@ export interface LLMLatencyMetrics {
 
 export interface LLMResult {
   text: string;
-  provider: 'gemini' | 'groq' | 'ollama' | 'rule_fallback';
+  provider: 'gemini' | 'groq' | 'omniroute' | 'ollama' | 'rule_fallback';
   model: string;
   executionTimeMs: number;
   escalated: boolean;
@@ -177,7 +178,30 @@ Respond directly to the user's query in a natural, conversational, professional 
       };
     } catch (groqError) {
       console.warn(
-        `[AUREXO LLM Dispatcher] Groq failed: ${formatErrorDetail(groqError)}. Failing over to Ollama...`
+        `[AUREXO LLM Dispatcher] Groq failed: ${formatErrorDetail(groqError)}. Trying OmniRoute...`
+      );
+    }
+  }
+
+  // Step 2.5: Attempt OmniRoute (Cloudflare Tunnel / High-Speed Cloud Gateway) if key is present
+  if (process.env.OMNIROUTE_API_KEY) {
+    try {
+      const omniRes = await generateWithOmniRoute(prompt, {
+        systemInstruction: SYSTEM_INSTRUCTION,
+      });
+      return {
+        text: sanitizeMarkdownFormatting(omniRes.text),
+        provider: 'omniroute',
+        model: omniRes.model,
+        executionTimeMs: omniRes.executionTimeMs,
+        escalated: false,
+        metrics: {
+          totalDurationMs: omniRes.executionTimeMs,
+        },
+      };
+    } catch (omniError) {
+      console.warn(
+        `[AUREXO LLM Dispatcher] OmniRoute failed: ${formatErrorDetail(omniError)}. Failing over to Ollama...`
       );
     }
   }
@@ -269,6 +293,8 @@ Respond directly to the user's query in a natural, conversational, professional 
     vesselData: toolData.vesselData,
     regionalWarnings: toolData.regionalWarnings,
     inlandData: toolData.inlandData,
+    internationalData: toolData.internationalData,
+    routeWeather: toolData.routeWeather,
     conversational: toolData.conversational,
     conceptQuery: toolData.conceptQuery,
     safetyAssessment: toolData.safetyAssessment,
