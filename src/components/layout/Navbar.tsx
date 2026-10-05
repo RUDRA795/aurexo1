@@ -21,7 +21,6 @@ const NAV_LINKS = [
   { label: 'Fleet', href: '/fleet', icon: Ship },
   { label: 'Regions', href: '/regions', icon: Globe2 },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { label: 'About PS 176', href: '/about', icon: Info },
 ];
 
 export function Navbar() {
@@ -59,11 +58,11 @@ export function Navbar() {
                 AUREXO
               </span>
               <span className="rounded border border-cyan-400/40 bg-cyan-500/15 px-1.5 py-0.5 text-[9px] font-mono font-bold tracking-widest text-cyan-300">
-                ISRO · ORCA
+                ORCA
               </span>
             </div>
             <span className="text-[9px] font-mono text-slate-400 -mt-0.5 tracking-tight hidden sm:inline">
-              SIH26176 Marine Intelligence Platform
+              Autonomous Marine Intelligence Platform
             </span>
           </div>
         </Link>

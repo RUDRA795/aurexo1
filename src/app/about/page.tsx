@@ -88,13 +88,12 @@ export default function AboutPage() {
         <div className="mb-10">
           <div className="mb-2 flex items-center gap-2 text-xs font-mono text-slate-300">
             <Info className="h-3.5 w-3.5 text-slate-200" />
-            SIH 2026 — PROBLEM STATEMENT PS-176
+            MARITIME INTELLIGENCE PLATFORM
           </div>
           <h1 className="mb-3 font-mono text-3xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">About ORCA</h1>
           <p className="max-w-3xl text-slate-200 leading-relaxed drop-shadow">
-            ORCA is built for <strong className="text-white">Smart India Hackathon 2026, Problem Statement PS-176</strong> —
-            an AI-powered maritime intelligence platform for India&apos;s 7,500 km coastline, covering fisherman safety,
-            vessel boundary compliance, marine resource sustainability and blue economy analytics.
+            ORCA is an AI-powered maritime intelligence platform for coastal and high-seas operations, covering fisherman safety,
+            vessel boundary compliance, marine resource sustainability and blue economy analytics across India&apos;s coastline.
           </p>
         </div>
 
@@ -103,7 +102,7 @@ export default function AboutPage() {
           <div className="mb-6 flex flex-wrap items-center gap-8">
             <div className="text-center">
               <p className="font-mono text-5xl font-black text-white">{overallPct}%</p>
-              <p className="mt-1 text-xs text-slate-300">Overall PS-176 Completion</p>
+              <p className="mt-1 text-xs text-slate-300">Operational Readiness</p>
             </div>
             <div className="flex gap-6">
               <div className="text-center">
@@ -129,7 +128,7 @@ export default function AboutPage() {
         <section className="mb-12">
           <div className="mb-5 flex items-center gap-2">
             <Shield className="h-5 w-5 text-slate-200" />
-            <h2 className="font-mono text-xl font-bold text-white drop-shadow">PS-176 Requirement Coverage</h2>
+            <h2 className="font-mono text-xl font-bold text-white drop-shadow">Platform Capabilities & Coverage</h2>
           </div>
           <div className="overflow-hidden rounded-2xl border border-white/20 bg-white/[0.08] shadow-xl backdrop-blur-md">
             <table className="w-full">
@@ -172,21 +171,6 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-        </section>
-
-        {/* Architecture note */}
-        <section className="mb-12 rounded-3xl border border-white/20 bg-white/[0.09] p-8 shadow-xl backdrop-blur-xl">
-          <div className="mb-4 flex items-center gap-2">
-            <Zap className="h-5 w-5 text-amber-300" />
-            <h2 className="font-mono text-xl font-bold text-white drop-shadow">Architecture Principles</h2>
-          </div>
-          <ul className="space-y-3.5 text-sm text-slate-200">
-            <li className="flex items-start gap-2.5"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-400" /> <span><strong className="text-white">No mock data.</strong> Every number shown to users comes from a verifiable external API (Open-Meteo, NASA GIBS) or clearly labelled as DOCUMENTED_UNVERIFIED reference data.</span></li>
-            <li className="flex items-start gap-2.5"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-400" /> <span><strong className="text-white">Single monolith.</strong> One Next.js App Router application — no separate microservices or backends. All intelligence runs in Route Handlers server-side.</span></li>
-            <li className="flex items-start gap-2.5"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-400" /> <span><strong className="text-white">LLM cascade.</strong> Gemini 3.8 Flash → Ollama (local, offline-capable) → deterministic rule fallback. Never fails even with no internet.</span></li>
-            <li className="flex items-start gap-2.5"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-400" /> <span><strong className="text-white">Evidence model.</strong> Every agent response carries source timestamps, verification status and provenance — users always know what is live vs reference.</span></li>
-            <li className="flex items-start gap-2.5"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-400" /> <span><strong className="text-white">Deterministic geospatial math.</strong> EEZ/IMBL/MPA calculations use Turf.js — no LLM hallucination in boundary checks.</span></li>
-          </ul>
         </section>
 
         {/* CTA */}

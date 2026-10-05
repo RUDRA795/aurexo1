@@ -290,9 +290,9 @@ export default function HomePage() {
             </div>
             <span className="text-emerald-300 font-semibold">MISSION ACTIVE</span>
             <span className="text-slate-400">|</span>
-            <span className="text-cyan-200">SIH 2026 · PS-176</span>
+            <span className="text-cyan-200">ORCA SYSTEM</span>
             <span className="text-slate-400">|</span>
-            <span className="text-slate-300">ISRO Classification</span>
+            <span className="text-slate-300">Autonomous Marine Intelligence</span>
           </div>
 
           {/* Main Title */}
@@ -367,13 +367,6 @@ export default function HomePage() {
             >
               <Globe2 className="h-5 w-5 text-cyan-300" />
               Coastal Sectors
-            </Link>
-            <Link
-              href="/about"
-              className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-6 py-3 font-semibold text-slate-200 backdrop-blur-xl transition-all hover:bg-white/[0.08] active:scale-95"
-            >
-              <Eye className="h-5 w-5 text-slate-400" />
-              PS-176 Audit
             </Link>
           </div>
         </div>
@@ -491,8 +484,8 @@ export default function HomePage() {
               Platform Capabilities
             </h2>
             <p className="mx-auto max-w-2xl text-slate-300 leading-relaxed">
-              Every feature built to fulfil SIH PS-176 requirements — verified live data,
-              Zod-validated schemas, deterministic geospatial math.
+              Autonomous multi-agent ocean observation engine — verified live telemetry,
+              Zod-validated schemas, and deterministic geospatial math across India's coastline.
             </p>
           </div>
 
@@ -545,7 +538,7 @@ export default function HomePage() {
               <span className="text-purple-300">COLLABORATIVE REASONING ENGINE</span>
             </div>
             <h2 className="mb-3 text-4xl font-bold text-white md:text-5xl">
-              5-Agent Swarm Architecture
+              5-Agent Collaborative Swarm
             </h2>
             <p className="text-slate-300">
               Specialized AI agents collaborate in real-time to answer every maritime query with verified evidence.
@@ -663,7 +656,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCENE 5: PS-176 COMPLIANCE — MISSION BRIEF
+          SCENE 5: SYSTEM COMPLIANCE & SPECIFICATION — MISSION BRIEF
       ══════════════════════════════════════════════════════════════════ */}
       <section ref={complianceReveal.ref} className="border-t border-white/5 px-4 py-20">
         <div className="mx-auto max-w-screen-xl">
@@ -678,16 +671,16 @@ export default function HomePage() {
               </div>
               <div>
                 <h3 className="font-mono text-lg font-bold text-white">
-                  SIH 2026 — Problem Statement PS-176
+                  Operational Marine Intelligence Platform
                 </h3>
-                <p className="text-xs text-slate-400">ISRO Marine Intelligence Platform · Production Grade</p>
+                <p className="text-xs text-slate-400">Autonomous Marine Intelligence Platform · Production Grade</p>
               </div>
             </div>
 
             <p className="mb-8 text-sm leading-relaxed text-slate-300">
-              AUREXO ORCA directly addresses every requirement of the Smart India Hackathon 2026 PS-176 —
-              14 capabilities verified live, with 98% average coverage across ocean telemetry, satellite imagery,
-              geofencing compliance, vessel tracking, and blue economy analytics.
+              AUREXO ORCA delivers comprehensive maritime situational awareness across India&apos;s 7,500 km coastline —
+              integrating verified live telemetry, NASA satellite observation layers, deterministic geofence compliance,
+              real-time AIS fleet tracking, and blue economy analytics.
             </p>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -709,16 +702,6 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-
-            <div className="mt-8 flex items-center gap-4">
-              <Link
-                href="/about"
-                className="flex items-center gap-2 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors"
-              >
-                View Full PS-176 Requirement Analysis
-                <ChevronRight className="h-4 w-4" />
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -733,19 +716,18 @@ export default function HomePage() {
               <img src="/images/orca-logo-circle.png" alt="AUREXO ORCA" className="h-full w-full object-cover" />
             </div>
             <span className="font-mono text-sm font-black tracking-wider text-slate-200">
-              AUREXO <span className="text-cyan-400">ISRO·ORCA</span>
+              AUREXO <span className="text-cyan-400">ORCA</span>
             </span>
           </div>
           <p className="text-xs text-slate-500 text-center max-w-lg">
             Marine Telemetry: Open-Meteo (live) · Satellite: NASA GIBS & INCOIS · Geospatial: Turf.js EEZ/IMBL ·
-            Vessels: AISStream · SIH 2026 PS-176 Production Grade
+            Vessels: AISStream · Autonomous Marine Intelligence Platform
           </p>
           <div className="flex items-center gap-5">
             <Link href="/dashboard" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Dashboard</Link>
             <Link href="/fleet" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Fleet</Link>
             <Link href="/regions" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Regions</Link>
             <Link href="/analytics" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Analytics</Link>
-            <Link href="/about" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">About</Link>
           </div>
         </div>
       </footer>

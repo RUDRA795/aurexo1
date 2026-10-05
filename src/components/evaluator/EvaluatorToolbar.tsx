@@ -31,16 +31,16 @@ export interface EvaluatorScenario {
 
 export const EVALUATOR_SCENARIOS: EvaluatorScenario[] = [
   {
-    id: 'sih-pfz-porbandar',
+    id: 'pfz-porbandar',
     title: '1. PFZ & Satellite Chlorophyll Front',
     category: 'PFZ',
     prompt: 'Where is the nearest Potential Fishing Zone (PFZ) near Porbandar coast and what are the oceanographic conditions?',
     coord: { latitude: 21.64, longitude: 69.62 },
     description: 'Correlates INCOIS PFZ advisory, satellite SST gradients (28.4°C), and chlorophyll-a for pelagic fish aggregations.',
-    badge: 'PS 176 Core',
+    badge: 'Core Analysis',
   },
   {
-    id: 'sih-imbl-palk-bay',
+    id: 'imbl-palk-bay',
     title: '2. IMBL Border Proximity Alert',
     category: 'GEOFENCE',
     prompt: 'Check vessel safety coordinates near Rameswaram Palk Strait. Are we approaching the Sri Lanka International Maritime Boundary Line?',
@@ -49,7 +49,7 @@ export const EVALUATOR_SCENARIOS: EvaluatorScenario[] = [
     badge: 'Geofence AI',
   },
   {
-    id: 'sih-mpa-gulf-mannar',
+    id: 'mpa-gulf-mannar',
     title: '3. Marine Protected Area Violation',
     category: 'GEOFENCE',
     prompt: 'Is commercial trawling permitted inside the Gulf of Mannar Marine National Park zone?',
@@ -58,7 +58,7 @@ export const EVALUATOR_SCENARIOS: EvaluatorScenario[] = [
     badge: 'Conservation',
   },
   {
-    id: 'sih-hazard-monsoon',
+    id: 'hazard-monsoon',
     title: '4. High Seas Hazard & Cyclone Warning',
     category: 'WEATHER',
     prompt: 'What are the current swell heights and wind advisories off the Konkan coast near Ratnagiri?',
@@ -67,7 +67,7 @@ export const EVALUATOR_SCENARIOS: EvaluatorScenario[] = [
     badge: 'Fishermen Safety',
   },
   {
-    id: 'sih-indic-tamil',
+    id: 'indic-tamil',
     title: '5. Indic Regional Voice Reasoning (Tamil)',
     category: 'INDIC',
     prompt: 'இன்று சென்னை துறைமுகத்தில் அலை உயரம் மற்றும் மீன்பிடி பாதுகாப்பு எப்படி உள்ளது?',
@@ -94,13 +94,13 @@ export function EvaluatorToolbar({ onRunScenario, onOpenManifest }: EvaluatorToo
              onClick={() => setIsExpanded((p) => !p)}>
           <div className="flex items-center gap-2">
             <div className="flex h-5 w-5 items-center justify-center rounded-md bg-cyan-400 text-marine-950 font-black text-[10px] shadow-sm">
-              SIH
+              ✓
             </div>
             <span className="text-xs font-bold tracking-tight text-cyan-200">
-              ISRO-ORCA Evaluator Benchmark Bar
+              ORCA Evaluator Benchmark Suite
             </span>
             <span className="hidden sm:inline-block rounded-full bg-cyan-500/20 px-2 py-0.5 text-[9px] font-mono font-medium text-cyan-300 border border-cyan-400/30">
-              Problem Statement 176
+              Production Ready
             </span>
           </div>
 
@@ -130,7 +130,7 @@ export function EvaluatorToolbar({ onRunScenario, onOpenManifest }: EvaluatorToo
         {isExpanded && (
           <div className="p-3 bg-white/95 space-y-2 border-t border-marine-100">
             <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
-              <span>One-Click Problem Statement Scenarios (Multi-Agent Swarm + Deterministic GIS):</span>
+              <span>One-Click Reference Scenarios (Multi-Agent Swarm + Deterministic GIS):</span>
               <span className="text-[10px] font-mono text-emerald-600 font-semibold">100% PRODUCTION READY</span>
             </div>
 

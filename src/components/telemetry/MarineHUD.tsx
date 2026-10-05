@@ -42,10 +42,7 @@ export function MarineHUD({
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-black tracking-tight text-slate-900">AUREXO</span>
             <span className="rounded bg-cyan-100/90 border border-cyan-300/80 px-1.5 py-0.2 text-[10px] font-mono font-bold text-cyan-800">
-              ISRO-ORCA
-            </span>
-            <span className="hidden sm:inline-block rounded bg-amber-100/80 border border-amber-300/80 px-1.5 py-0.2 text-[9px] font-mono font-bold text-amber-800">
-              PS-176
+              ORCA
             </span>
           </div>
           <p className="text-[10px] font-medium text-slate-500 truncate max-w-[180px] sm:max-w-none">

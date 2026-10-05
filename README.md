@@ -1,6 +1,5 @@
 # AUREXO // Marine Intelligence Platform
-> **Smart India Hackathon 2026 — Problem Statement 176 / SIH26176**  
-> *Autonomous Marine Ecosystem Reasoning with Collaborative Agents (ISRO)*
+> *Autonomous Marine Ecosystem Reasoning with Collaborative Agents*
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.1-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
@@ -13,7 +12,7 @@
 
 ## 🌊 Overview
 
-**Aurexo** is a full-stack, map-first marine intelligence platform engineered for **SIH Problem Statement 176 (SIH26176)** sponsored by the **Indian Space Research Organisation (ISRO)**. 
+**Aurexo** is a full-stack, map-first marine intelligence platform engineered for mission-critical maritime operations. 
 
 Coastal communities, artisanal fishermen, and maritime operators face dangerous unpredictable weather, complex fragmented satellite portals (MOSDAC, INCOIS, Bhoonidhi), and an absence of real-time spatial reasoning. Aurexo unifies all of this into a single, light, **Pearl Marine Glass** surface that:
 1. **Never hallucinates data**: Directly queries verified oceanographic feeds and satellite-derived layers before letting AI explain the evidence.
@@ -131,12 +130,3 @@ npm run lint
 # Build production bundle
 npm run build
 ```
-
----
-
-## 👥 Hackathon Team & Project Info
-
-- **Hackathon**: Smart India Hackathon 2026
-- **Problem Statement**: SIH26176 (PS 176)
-- **Ministry / Sponsoring Agency**: Indian Space Research Organisation (ISRO) / Department of Space
-- **Category**: Software (Disaster Management & Space Technology)

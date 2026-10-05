@@ -193,7 +193,7 @@ export function VoyageManifestModal({ isOpen, onClose, defaultCoord }: VoyageMan
                 Official Voyage Clearance Manifest
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                ISRO-ORCA Port State Control & Navigational Safety Verification
+                Port State Control & Navigational Safety Verification
               </p>
             </div>
           </div>
@@ -329,7 +329,7 @@ export function VoyageManifestModal({ isOpen, onClose, defaultCoord }: VoyageMan
                   </div>
                   <div>
                     <div className="text-[11px] font-bold tracking-widest uppercase text-white/80">
-                      Director General of Shipping // ISRO-ORCA Safety Seal
+                      Director General of Shipping // ORCA Safety Seal
                     </div>
                     <div className="text-2xl font-black tracking-tight">
                       {manifestData.verdict === 'APPROVED'
