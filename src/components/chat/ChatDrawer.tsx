@@ -53,7 +53,7 @@ export function ChatDrawer({
       id: 'welcome',
       role: 'assistant',
       content:
-        'Welcome to **ORCA** // Collaborative Marine Intelligence Platform.\n\nI can assist you with:\n• Verified real-time wave, wind, and sea conditions\n• Satellite observation layers (SST, Chlorophyll, TrueColor)\n• Potential Fishing Zones (PFZ) & Habitat Suitability\n• Border proximity (IMBL) & Marine Protected Area compliance\n• Real-time Indian vessel & fleet tracking\n• Sector-level regional marine warnings\n\nClick anywhere on the map or ask a tactical inquiry below in any Indian language.',
+        'Welcome to **AUREXO** // Collaborative Marine Intelligence Platform.\n\nI can assist you with:\n• Verified real-time wave, wind, and sea conditions\n• Satellite observation layers (SST, Chlorophyll, TrueColor)\n• Potential Fishing Zones (PFZ) & Habitat Suitability\n• Border proximity (IMBL) & Marine Protected Area compliance\n• Real-time Indian vessel & fleet tracking\n• Sector-level regional marine warnings\n\nClick anywhere on the map or ask a tactical inquiry below in any Indian language.',
       timestamp: 'Tactical AI',
     },
   ]);
@@ -257,9 +257,9 @@ export function ChatDrawer({
           <div className="flex items-center justify-between border-b border-slate-200/70 px-4 py-2.5 bg-white/60">
             <div className="flex items-center gap-2">
               <div className="h-5 w-5 overflow-hidden rounded-full border border-cyan-500/40">
-                <img src="/images/orca-logo-circle.png" alt="ORCA" className="h-full w-full object-cover" />
+                <img src="/images/orca-logo-circle.png" alt="AUREXO" className="h-full w-full object-cover" />
               </div>
-              <span className="text-xs font-bold text-slate-800">ORCA Multi-Agent Copilot</span>
+              <span className="text-xs font-bold text-slate-800">ASK AUREXO</span>
             </div>
 
             <div className="flex items-center gap-1.5">
@@ -409,7 +409,7 @@ export function ChatDrawer({
         <button
           onClick={() => setIsOpen(true)}
           className="glass-pearl flex h-12 w-12 items-center justify-center rounded-2xl shadow-pearl-md text-marine-600 hover:text-marine-800 transition-all hover:scale-105 active:scale-95"
-          title="Open ORCA Chat Drawer"
+          title="Open ASK AUREXO Drawer"
         >
           <Sparkles className="h-5 w-5" />
         </button>

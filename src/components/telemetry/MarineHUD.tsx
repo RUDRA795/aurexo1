@@ -36,17 +36,17 @@ export function MarineHUD({
       {/* Brand Identity */}
       <div className="flex items-center gap-2.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/40 overflow-hidden shadow-sm bg-slate-900 ring-2 ring-cyan-500/20">
-          <img src="/images/orca-logo-circle.png" alt="AUREXO ORCA" className="h-full w-full object-cover" />
+          <img src="/images/orca-logo-circle.png" alt="AUREXO" className="h-full w-full object-cover" />
         </div>
         <div>
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-black tracking-tight text-slate-900">AUREXO</span>
             <span className="rounded bg-cyan-100/90 border border-cyan-300/80 px-1.5 py-0.2 text-[10px] font-mono font-bold text-cyan-800">
-              ORCA
+              LIVE
             </span>
           </div>
           <p className="text-[10px] font-medium text-slate-500 truncate max-w-[180px] sm:max-w-none">
-            {currentObservation?.locationName ?? 'Collaborative Marine Intelligence Swarm'}
+            {currentObservation?.locationName ?? 'Autonomous Marine Intelligence Swarm'}
           </p>
         </div>
       </div>

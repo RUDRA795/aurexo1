@@ -97,7 +97,7 @@ export function EvaluatorToolbar({ onRunScenario, onOpenManifest }: EvaluatorToo
               ✓
             </div>
             <span className="text-xs font-bold tracking-tight text-cyan-200">
-              ORCA Evaluator Benchmark Suite
+              AUREXO Benchmark Suite
             </span>
             <span className="hidden sm:inline-block rounded-full bg-cyan-500/20 px-2 py-0.5 text-[9px] font-mono font-medium text-cyan-300 border border-cyan-400/30">
               Production Ready

@@ -485,7 +485,7 @@ export function MarineMap({
             </div>
 
             <button id="btn-ask-orca-point" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3); transition: all 0.2s;">
-              ⚡ ASK ORCA ABOUT THIS LOCATION
+              ⚡ ASK AUREXO ABOUT THIS LOCATION
             </button>
           `;
 
@@ -512,7 +512,7 @@ export function MarineMap({
             <div style="font-size: 10px; color: #475569;">Selected point: ${coord.latitude.toFixed(4)}°N, ${coord.longitude.toFixed(4)}°E</div>
             <div style="margin-top: 4px; font-size: 9px; color: #ef4444;">Live telemetry temporarily unavailable: ${err.message}</div>
             <button id="btn-ask-orca-point-err" style="margin-top: 8px; width: 100%; background: #0284c7; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-              ⚡ Ask ORCA Copilot
+              ⚡ Ask AUREXO Copilot
             </button>
           `;
           const errBtn = errDiv.querySelector('#btn-ask-orca-point-err');

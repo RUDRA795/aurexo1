@@ -279,14 +279,14 @@ export default function RegionsPage() {
                     </div>
                   )}
 
-                  {/* Ask ORCA link */}
+                  {/* Ask AUREXO link */}
                   <div className="mt-4 flex items-center gap-2">
                     <Link
                       href={`/dashboard?q=What is happening around ${region.name ?? region.id}?`}
                       className="flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/15 px-3 py-1.5 rounded-xl transition-all shadow-sm"
                     >
                       <Navigation className="h-3.5 w-3.5 text-slate-200" />
-                      Ask ORCA about this region
+                      Ask AUREXO about this region
                       <ChevronRight className="h-3.5 w-3.5 opacity-80" />
                     </Link>
                   </div>

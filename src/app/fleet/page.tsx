@@ -199,7 +199,7 @@ export default function FleetPage() {
             </div>
             <h1 className="mb-2 font-mono text-3xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">Indian Maritime Fleet</h1>
             <p className="text-sm text-slate-200 drop-shadow">
-              Registered vessels in the ORCA AIS registry — position, speed, heading and destination.
+              Registered vessels in the AUREXO AIS registry — position, speed, heading and destination.
             </p>
           </div>
           <div className="flex items-center gap-3">

@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Anchor,
-  Map,
+  Home,
+  Compass,
   Ship,
   Globe2,
   BarChart3,
@@ -17,7 +18,8 @@ import {
 } from 'lucide-react';
 
 const NAV_LINKS = [
-  { label: 'Dashboard', href: '/dashboard', icon: Map },
+  { label: 'Home', href: '/', icon: Home },
+  { label: 'Explore', href: '/dashboard', icon: Compass },
   { label: 'Fleet', href: '/fleet', icon: Ship },
   { label: 'Regions', href: '/regions', icon: Globe2 },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
@@ -48,7 +50,7 @@ export function Navbar() {
           <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-cyan-400/50 bg-slate-900 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/30 transition-all group-hover:scale-105 group-hover:border-cyan-300">
             <img
               src="/images/orca-logo-circle.png"
-              alt="AUREXO ORCA Logo"
+              alt="AUREXO Logo"
               className="h-full w-full object-cover"
             />
           </div>
@@ -58,7 +60,7 @@ export function Navbar() {
                 AUREXO
               </span>
               <span className="rounded border border-cyan-400/40 bg-cyan-500/15 px-1.5 py-0.5 text-[9px] font-mono font-bold tracking-widest text-cyan-300">
-                ORCA
+                LIVE
               </span>
             </div>
             <span className="text-[9px] font-mono text-slate-400 -mt-0.5 tracking-tight hidden sm:inline">
@@ -88,14 +90,14 @@ export function Navbar() {
           })}
         </div>
 
-        {/* Ask ORCA CTA + hamburger */}
+        {/* Ask AUREXO CTA + hamburger */}
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
             className="hidden items-center gap-2 rounded-lg bg-white/95 px-4 py-1.5 text-sm font-semibold text-slate-950 shadow-md transition-all hover:bg-white hover:shadow-lg active:scale-95 md:flex"
           >
             <MessageSquare className="h-4 w-4 text-slate-900" />
-            Ask ORCA
+            Ask AUREXO
           </Link>
 
           {/* Live indicator */}
@@ -142,7 +144,7 @@ export function Navbar() {
             className="mt-2 flex items-center justify-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-300"
           >
             <MessageSquare className="h-4 w-4" />
-            Ask ORCA
+            Ask AUREXO
           </Link>
         </div>
       )}

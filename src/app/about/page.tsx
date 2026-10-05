@@ -21,7 +21,7 @@ const PS_REQUIREMENTS = [
   { req: 'INCOIS PFZ Advisories & Coral Reefs WMS', status: 'live', coverage: 100, note: 'Official INCOIS Ocean Color and Coral Bleaching WMS feeds' },
   { req: 'EEZ & IMBL boundary geofencing', status: 'live', coverage: 100, note: 'Turf.js deterministic math over india_eez_imbl.geojson' },
   { req: 'Marine Protected Area compliance', status: 'live', coverage: 100, note: 'Point-in-polygon via Turf.js + marine_protected_areas.geojson' },
-  { req: 'Multi-Agent Swarm Reasoning — Ask ORCA', status: 'live', coverage: 100, note: '5-Agent swarm with Supervisor, sessionContext & multi-turn memory' },
+  { req: 'Multi-Agent Swarm Reasoning — Ask AUREXO', status: 'live', coverage: 100, note: '5-Agent swarm with Supervisor, sessionContext & multi-turn memory' },
   { req: 'Geospatial map canvas intelligence', status: 'live', coverage: 100, note: 'MapLibre GL — satellite layers, fleet layer, agent markers' },
   { req: 'Regional marine warning scanning', status: 'live', coverage: 100, note: '9 Indian coastal sectors continuously monitored in real-time' },
   { req: 'Safety & hazard risk scoring engine', status: 'live', coverage: 95, note: 'Fused wave, wind, storm surge and small-craft advisory ratings' },
@@ -90,9 +90,9 @@ export default function AboutPage() {
             <Info className="h-3.5 w-3.5 text-slate-200" />
             MARITIME INTELLIGENCE PLATFORM
           </div>
-          <h1 className="mb-3 font-mono text-3xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">About ORCA</h1>
+          <h1 className="mb-3 font-mono text-3xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">About AUREXO</h1>
           <p className="max-w-3xl text-slate-200 leading-relaxed drop-shadow">
-            ORCA is an AI-powered maritime intelligence platform for coastal and high-seas operations, covering fisherman safety,
+            AUREXO is an AI-powered maritime intelligence platform for coastal and high-seas operations, covering fisherman safety,
             vessel boundary compliance, marine resource sustainability and blue economy analytics across India&apos;s coastline.
           </p>
         </div>
@@ -180,7 +180,7 @@ export default function AboutPage() {
             className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-slate-950 shadow-xl transition-all hover:bg-slate-100 hover:shadow-2xl hover:scale-105 active:scale-95"
           >
             <Anchor className="h-5 w-5 text-slate-900" />
-            Launch Dashboard
+            Explore Platform
             <ChevronRight className="h-4 w-4" />
           </Link>
           <a

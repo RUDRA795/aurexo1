@@ -30,6 +30,8 @@ import {
   Compass,
   Mic,
   Languages,
+  Users,
+  Home,
 } from 'lucide-react';
 
 // ─── Live port stat types ────────────────────────────────────────────────
@@ -279,7 +281,7 @@ export default function HomePage() {
             heroLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          {/* Mission Classification Badge */}
+          {/* Platform Status Badge */}
           <div
             className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-cyan-500/30 bg-cyan-950/60 px-5 py-2 text-xs font-mono backdrop-blur-xl shadow-lg"
             style={{ transitionDelay: '200ms' }}
@@ -288,9 +290,9 @@ export default function HomePage() {
               <span className="absolute h-2.5 w-2.5 rounded-full bg-emerald-400 animate-ping opacity-75" />
               <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
             </div>
-            <span className="text-emerald-300 font-semibold">MISSION ACTIVE</span>
+            <span className="text-emerald-300 font-semibold">SYSTEM ONLINE</span>
             <span className="text-slate-400">|</span>
-            <span className="text-cyan-200">ORCA SYSTEM</span>
+            <span className="text-cyan-200 font-bold">AUREXO</span>
             <span className="text-slate-400">|</span>
             <span className="text-slate-300">Autonomous Marine Intelligence</span>
           </div>
@@ -313,7 +315,7 @@ export default function HomePage() {
           >
             <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-cyan-500/60" />
             <span className="font-mono text-sm tracking-[0.35em] text-cyan-400">
-              ORCA MARINE INTELLIGENCE
+              AUREXO MARINE INTELLIGENCE
             </span>
             <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-cyan-500/60" />
           </div>
@@ -358,7 +360,7 @@ export default function HomePage() {
               className="group flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-3.5 font-semibold text-white shadow-xl shadow-cyan-500/25 transition-all hover:shadow-2xl hover:shadow-cyan-500/40 hover:scale-105 active:scale-95"
             >
               <MessageSquare className="h-5 w-5" />
-              Launch Mission Control
+              Explore AUREXO
               <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
@@ -678,7 +680,7 @@ export default function HomePage() {
             </div>
 
             <p className="mb-8 text-sm leading-relaxed text-slate-300">
-              AUREXO ORCA delivers comprehensive maritime situational awareness across India&apos;s 7,500 km coastline —
+              AUREXO delivers comprehensive maritime situational awareness across India&apos;s 7,500 km coastline —
               integrating verified live telemetry, NASA satellite observation layers, deterministic geofence compliance,
               real-time AIS fleet tracking, and blue economy analytics.
             </p>
@@ -709,25 +711,124 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════════════════════════════ */}
-      <footer className="border-t border-cyan-900/20 px-4 py-10">
-        <div className="mx-auto max-w-screen-xl flex flex-col items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-7 w-7 overflow-hidden rounded-full border border-cyan-400/40 shadow-sm shadow-cyan-500/20">
-              <img src="/images/orca-logo-circle.png" alt="AUREXO ORCA" className="h-full w-full object-cover" />
+      <footer className="border-t border-cyan-900/30 bg-slate-950/80 px-4 py-16 backdrop-blur-xl">
+        <div className="mx-auto max-w-screen-xl space-y-12">
+          {/* Top Section: About AUREXO & Navigation */}
+          <div className="grid gap-8 lg:grid-cols-12">
+            {/* About AUREXO */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 overflow-hidden rounded-full border border-cyan-400/50 bg-slate-900 p-0.5 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/30">
+                  <img src="/images/orca-logo-circle.png" alt="AUREXO" className="h-full w-full rounded-full object-cover" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-lg font-black tracking-wider text-white">
+                      AUREXO
+                    </span>
+                    <span className="rounded border border-cyan-400/40 bg-cyan-500/15 px-1.5 py-0.5 text-[9px] font-mono font-bold tracking-widest text-cyan-300">
+                      LIVE
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 font-mono">
+                    Autonomous Marine Intelligence Platform
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm text-slate-300 leading-relaxed max-w-2xl">
+                <p className="font-semibold text-white">About AUREXO</p>
+                <p className="text-slate-300 text-xs sm:text-sm">
+                  AUREXO is an advanced autonomous maritime intelligence and oceanic reasoning platform.
+                  Engineered for coastal security, fisherman safety, and blue economy sustainability across India&apos;s
+                  7,500 km coastline, AUREXO unifies real-time oceanographic telemetry, NASA GIBS satellite earth observations,
+                  deterministic spatial geofencing (IMBL/EEZ/MPA), live AIS vessel tracking, and a multi-agent swarm reasoning engine.
+                </p>
+              </div>
             </div>
-            <span className="font-mono text-sm font-black tracking-wider text-slate-200">
-              AUREXO <span className="text-cyan-400">ORCA</span>
-            </span>
+
+            {/* Platform Quick Links */}
+            <div className="lg:col-span-5 flex flex-col justify-between">
+              <div>
+                <p className="mb-3 font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
+                  Platform Exploration
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <Link href="/" className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors">
+                    <ChevronRight className="h-3 w-3 text-cyan-500" />
+                    Home
+                  </Link>
+                  <Link href="/dashboard" className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors">
+                    <ChevronRight className="h-3 w-3 text-cyan-500" />
+                    Explore
+                  </Link>
+                  <Link href="/fleet" className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors">
+                    <ChevronRight className="h-3 w-3 text-cyan-500" />
+                    Fleet
+                  </Link>
+                  <Link href="/regions" className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors">
+                    <ChevronRight className="h-3 w-3 text-cyan-500" />
+                    Regions
+                  </Link>
+                  <Link href="/analytics" className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors">
+                    <ChevronRight className="h-3 w-3 text-cyan-500" />
+                    Analytics
+                  </Link>
+                  <Link href="/dashboard" className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors">
+                    <ChevronRight className="h-3 w-3 text-cyan-500" />
+                    Ask AUREXO
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-slate-500 text-center max-w-lg">
-            Marine Telemetry: Open-Meteo (live) · Satellite: NASA GIBS & INCOIS · Geospatial: Turf.js EEZ/IMBL ·
-            Vessels: AISStream · Autonomous Marine Intelligence Platform
-          </p>
-          <div className="flex items-center gap-5">
-            <Link href="/dashboard" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Dashboard</Link>
-            <Link href="/fleet" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Fleet</Link>
-            <Link href="/regions" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Regions</Link>
-            <Link href="/analytics" className="text-xs text-slate-500 hover:text-cyan-300 transition-colors">Analytics</Link>
+
+          {/* Middle Section: Team Name & Members */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md">
+            <div className="mb-4 flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-cyan-400" />
+                <span className="font-mono text-xs font-bold uppercase tracking-widest text-cyan-200">
+                  Team AUREXO
+                </span>
+              </div>
+              <span className="text-[11px] font-mono text-slate-400">
+                Core Engineering & Project Team
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                { name: 'Rohit Shankar Lakas', role: 'Core Engineering' },
+                { name: 'Shashank Ajay Nagose', role: 'Core Engineering' },
+                { name: 'Rohit Anil Chute', role: 'Core Engineering' },
+                { name: 'Om Ravindra Bokade', role: 'Core Engineering' },
+                { name: 'Sourabh Harichand Wanjari', role: 'Core Engineering' },
+                { name: 'Nandini Yogeshwar Nanwatkar', role: 'Core Engineering' },
+              ].map((member) => (
+                <div
+                  key={member.name}
+                  className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3 transition-all hover:border-cyan-500/30 hover:bg-white/[0.08]"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300">
+                    {member.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-100 truncate">{member.name}</p>
+                    <p className="text-[10px] font-mono text-slate-400">{member.role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Copyright */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-slate-400">
+            <p>© 2026 AUREXO · Autonomous Marine Intelligence Platform. All rights reserved.</p>
+            <p className="font-mono text-[11px] text-emerald-400 flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              All Marine Telemetry & AI Systems Operational
+            </p>
           </div>
         </div>
       </footer>

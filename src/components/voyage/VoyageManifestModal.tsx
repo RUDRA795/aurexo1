@@ -153,7 +153,7 @@ export function VoyageManifestModal({ isOpen, onClose, defaultCoord }: VoyageMan
       }
 
       const randomHash = Math.random().toString(36).substring(2, 10).toUpperCase();
-      const clearanceId = `IN-ORCA-2026-CLR-${Math.floor(100000 + Math.random() * 900000)}`;
+      const clearanceId = `IN-AUREXO-2026-CLR-${Math.floor(100000 + Math.random() * 900000)}`;
 
       setManifestData({
         clearanceId,
@@ -329,7 +329,7 @@ export function VoyageManifestModal({ isOpen, onClose, defaultCoord }: VoyageMan
                   </div>
                   <div>
                     <div className="text-[11px] font-bold tracking-widest uppercase text-white/80">
-                      Director General of Shipping // ORCA Safety Seal
+                      Director General of Shipping // AUREXO Safety Seal
                     </div>
                     <div className="text-2xl font-black tracking-tight">
                       {manifestData.verdict === 'APPROVED'
