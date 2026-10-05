@@ -143,7 +143,7 @@ export interface AgentResponse {
   };
   sessionContext?: SessionContext;
   llmMetadata: {
-    provider: 'gemini' | 'ollama' | 'rule_fallback';
+    provider: 'gemini' | 'groq' | 'ollama' | 'rule_fallback';
     model: string;
     executionTimeMs: number;
     escalated: boolean;

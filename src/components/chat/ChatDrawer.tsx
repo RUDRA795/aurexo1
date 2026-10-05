@@ -252,7 +252,7 @@ export function ChatDrawer({
     >
       {/* Drawer Body */}
       {isOpen ? (
-        <div className="glass-pearl flex h-[calc(100vh-6rem)] w-full flex-col rounded-2xl shadow-pearl-lg overflow-hidden border border-slate-200/80">
+        <div className="glass-pearl flex h-[calc(100vh-11rem)] sm:h-[calc(100vh-11.5rem)] max-h-[740px] w-full flex-col rounded-2xl shadow-pearl-lg overflow-hidden border border-slate-200/80">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-200/70 px-4 py-2.5 bg-white/60">
             <div className="flex items-center gap-2">

@@ -46,19 +46,26 @@ export function Navbar() {
       <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 md:px-6">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5">
-          <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-cyan-400/40 bg-slate-900/80 shadow-md shadow-cyan-500/20 transition-all group-hover:scale-105 group-hover:border-cyan-300">
+          <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-cyan-400/50 bg-slate-900 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/30 transition-all group-hover:scale-105 group-hover:border-cyan-300">
             <img
               src="/images/orca-logo-circle.png"
-              alt="ORCA Logo"
+              alt="AUREXO ORCA Logo"
               className="h-full w-full object-cover"
             />
           </div>
-          <span className="font-mono text-xl font-extrabold tracking-wider text-white">
-            ORCA
-            <span className="ml-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-widest text-cyan-300">
-              MARINE AI
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="font-mono text-xl font-black tracking-wider text-white">
+                AUREXO
+              </span>
+              <span className="rounded border border-cyan-400/40 bg-cyan-500/15 px-1.5 py-0.5 text-[9px] font-mono font-bold tracking-widest text-cyan-300">
+                ISRO · ORCA
+              </span>
+            </div>
+            <span className="text-[9px] font-mono text-slate-400 -mt-0.5 tracking-tight hidden sm:inline">
+              SIH26176 Marine Intelligence Platform
             </span>
-          </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}

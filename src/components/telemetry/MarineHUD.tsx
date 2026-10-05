@@ -35,18 +35,21 @@ export function MarineHUD({
     <header className="glass-pearl flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-2.5 shadow-pearl-md">
       {/* Brand Identity */}
       <div className="flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/30 overflow-hidden shadow-sm">
-          <img src="/images/orca-logo-circle.png" alt="ORCA" className="h-full w-full object-cover" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/40 overflow-hidden shadow-sm bg-slate-900 ring-2 ring-cyan-500/20">
+          <img src="/images/orca-logo-circle.png" alt="AUREXO ORCA" className="h-full w-full object-cover" />
         </div>
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-extrabold tracking-tight text-slate-900">ORCA</span>
-            <span className="rounded bg-marine-100 px-1.5 py-0.2 text-[10px] font-semibold text-marine-700">
-              SIH26176
+            <span className="text-sm font-black tracking-tight text-slate-900">AUREXO</span>
+            <span className="rounded bg-cyan-100/90 border border-cyan-300/80 px-1.5 py-0.2 text-[10px] font-mono font-bold text-cyan-800">
+              ISRO-ORCA
+            </span>
+            <span className="hidden sm:inline-block rounded bg-amber-100/80 border border-amber-300/80 px-1.5 py-0.2 text-[9px] font-mono font-bold text-amber-800">
+              PS-176
             </span>
           </div>
-          <p className="text-[10px] font-medium text-slate-500">
-            {currentObservation?.locationName ?? 'Collaborative Marine Intelligence'}
+          <p className="text-[10px] font-medium text-slate-500 truncate max-w-[180px] sm:max-w-none">
+            {currentObservation?.locationName ?? 'Collaborative Marine Intelligence Swarm'}
           </p>
         </div>
       </div>

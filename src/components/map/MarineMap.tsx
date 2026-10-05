@@ -722,8 +722,8 @@ export function MarineMap({
     <div className={`relative h-full w-full overflow-hidden ${className ?? ''}`}>
       <div ref={mapContainerRef} className="h-full w-full" />
 
-      {/* Floating Layer Controls Dock (Bottom Left) */}
-      <div className="absolute bottom-6 left-6 z-10 flex flex-col gap-2">
+      {/* Floating Layer Controls & Legend Dock (Positioned at Bottom Right to prevent ChatDrawer & Evaluator collision) */}
+      <div className="absolute bottom-16 right-4 z-10 flex flex-col items-end gap-2 pointer-events-auto">
         <Legend activeLayer={activeLayer} />
         <LayerController
           activeLayer={activeLayer}

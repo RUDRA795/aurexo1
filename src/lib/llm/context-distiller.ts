@@ -14,6 +14,30 @@ export function distillToolContextForLLM(toolData: Record<string, any>): string 
     lines.push(`• Location: ${loc}`);
   }
 
+  // 1b. Inland Territory & Maritime Gateways
+  if (toolData.inlandData) {
+    const inland = toolData.inlandData;
+    lines.push(`• Inland Territory: ${inland.name} (${inland.state}) - ${inland.context}`);
+    if (Array.isArray(inland.nearestPorts)) {
+      const portSummary = inland.nearestPorts
+        .map((p: any) => `${p.name} (~${p.distanceKm} km, ${p.sector})`)
+        .join('; ');
+      lines.push(`• Nearest Maritime Gateways & Ports: ${portSummary}`);
+    }
+    lines.push(`• Maritime Platform Scope: AUREXO / ORCA is an oceanographic and maritime boundary intelligence engine for India's 7,516 km coastline, EEZ, and high seas.`);
+  }
+
+  // 1c. Conversational Orientation
+  if (toolData.conversational) {
+    lines.push(`• Platform Identity: AUREXO / ORCA (ISRO-standard maritime intelligence copilot)`);
+    lines.push(`• Active Capabilities: Real-time ocean observations (waves, currents, SST), weather alerts, AIS vessel tracking, IMBL/EEZ geofencing, Potential Fishing Zones (PFZ), navigational routing.`);
+  }
+
+  // 1d. Oceanographic Concept Knowledge
+  if (toolData.conceptQuery) {
+    lines.push(`• Oceanographic Concept Focus: ${toolData.conceptQuery.topic}`);
+  }
+
   // 2. Weather conditions
   const w = toolData.weather ?? toolData.pointIntelligence?.weather;
   const cond = toolData.conditions ?? toolData.pointIntelligence?.marine;

@@ -66,7 +66,7 @@ export function AgentInspector({ isOpen, onClose, trace }: AgentInspectorProps) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-6 top-20 z-30 w-80 sm:w-96 rounded-2xl glass-pearl shadow-pearl-lg border border-slate-200/80 overflow-hidden flex flex-col max-h-[calc(100vh-6rem)] animate-in slide-in-from-right-4 duration-200">
+    <div className="fixed right-3 sm:right-6 top-[132px] sm:top-[140px] z-30 w-80 sm:w-96 rounded-2xl glass-pearl shadow-pearl-lg border border-slate-200/80 overflow-hidden flex flex-col max-h-[calc(100vh-11rem)] max-h-[740px] animate-in slide-in-from-right-4 duration-200">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200/70 px-4 py-3 bg-white/70">
         <div className="flex items-center gap-2">

@@ -99,3 +99,78 @@ body {
   min-width: 200px;
 }
 
+/* Aerospace & Oceanic Cinematic Animations */
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sonar-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes waveform {
+  0%, 100% {
+    height: 6px;
+  }
+  50% {
+    height: 28px;
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(1000%);
+  }
+}
+
+@keyframes telemetry-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.25), inset 0 0 15px rgba(6, 182, 212, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.55), inset 0 0 25px rgba(6, 182, 212, 0.2);
+  }
+}
+
+.animate-radar {
+  animation: radar-sweep 4s linear infinite;
+}
+
+.animate-sonar-pulse {
+  animation: sonar-pulse 2.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+.animate-telemetry-glow {
+  animation: telemetry-glow 3s ease-in-out infinite;
+}
+
+.animate-scanline {
+  animation: scanline 8s linear infinite;
+}
+
+.grid-matrix-pattern {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+

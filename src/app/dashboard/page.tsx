@@ -158,8 +158,8 @@ export default function DashboardPage() {
         className="absolute inset-0 z-0"
       />
 
-      {/* 2. Top Floating Marine HUD */}
-      <div className="pointer-events-none absolute left-0 right-0 top-4 z-20 flex justify-center px-4">
+      {/* 2. Top Floating Marine HUD (positioned cleanly below fixed Navbar at top-0) */}
+      <div className="pointer-events-none absolute left-0 right-0 top-16 sm:top-[68px] z-20 flex justify-center px-3 sm:px-4">
         <div className="pointer-events-auto w-full max-w-6xl">
           <MarineHUD
             currentObservation={currentObservation}
@@ -174,8 +174,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 3. Left Floating Command Copilot Drawer */}
-      <div className="absolute left-6 top-20 z-20">
+      {/* 3. Left Floating Command Copilot Drawer (positioned below top HUD without collision) */}
+      <div className="absolute left-3 sm:left-6 top-[132px] sm:top-[140px] z-20">
         <ChatDrawer
           selectedCoordinate={selectedCoordinate}
           onAgentResponse={handleAgentResponse}

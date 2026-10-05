@@ -6,9 +6,9 @@ import { SiteBackground } from '@/components/layout/SiteBackground';
 import { OrcaIntro } from '@/components/intro/OrcaIntro';
 
 export const metadata: Metadata = {
-  title: 'ORCA // Marine Ecosystem Reasoning Platform',
+  title: 'AUREXO · ORCA // ISRO Marine Intelligence Platform',
   description:
-    'ORCA: Marine Ecosystem Reasoning with Collaborative Agents. AI-driven marine intelligence with deterministic spatial safety and satellite observation layers. SIH 2026 PS 176 (ISRO).',
+    'AUREXO ORCA: Oceanic Reasoning & Collaborative Agents. AI-driven marine intelligence with deterministic spatial safety, NASA GIBS satellite observation layers, and live AIS vessel telemetry. SIH 2026 PS 176 (ISRO).',
   icons: {
     icon: '/images/orca-logo-circle.png',
     apple: '/images/orca-logo-circle.png',

@@ -97,7 +97,7 @@ export class OpenMeteoMarineAdapter {
     const url = `${this.baseUrl}?latitude=${coord.latitude}&longitude=${coord.longitude}&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,ocean_current_velocity,ocean_current_direction,sea_surface_temperature`;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 2500);
 
     try {
       const res = await fetch(url, {
@@ -184,7 +184,7 @@ export class OpenMeteoWeatherAdapter {
     const url = `${this.baseUrl}?latitude=${coord.latitude}&longitude=${coord.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,surface_pressure,precipitation,weather_code`;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 2500);
 
     try {
       const res = await fetch(url, {

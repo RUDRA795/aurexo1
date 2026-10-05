@@ -6,21 +6,26 @@ const SESSION_STORAGE_KEY = 'orca_intro_seen';
 const FADE_DURATION_MS = 300;
 
 export function OrcaIntro() {
-  const [isVisible, setIsVisible] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    try {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        return false;
-      }
-      return !sessionStorage.getItem(SESSION_STORAGE_KEY) && !sessionStorage.getItem('aurexo_intro_seen');
-    } catch {
-      return false;
-    }
-  });
-
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isFading, setIsFading] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const isDismissedRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      const seen =
+        sessionStorage.getItem(SESSION_STORAGE_KEY) ||
+        sessionStorage.getItem('aurexo_intro_seen');
+      if (!seen) {
+        setIsVisible(true);
+      }
+    } catch {
+      // Ignore sessionStorage exceptions
+    }
+  }, []);
 
   const dismiss = useCallback((immediate: boolean = false) => {
     if (isDismissedRef.current) return;
